@@ -17,6 +17,7 @@ namespace QRCode.Pages.Auth
         {
             try
             {
+               
                 string Url = "api/forgotpassword?email=" + model.Email;
                 var result = await Http.PostAsync(Url, null).ConfigureAwait(false);
                 var responseData = await result.Content.ReadAsStringAsync();

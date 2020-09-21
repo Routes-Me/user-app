@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QRCode.Models.CommonModels;
 using System.Net.Http.Json;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace QRCode
 {
@@ -19,14 +21,13 @@ namespace QRCode
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddSingleton(async p =>
-            {
-                var httpClient = p.GetRequiredService<HttpClient>();
-                return await httpClient.GetFromJsonAsync<AppSettings>("AppSettings.json")
-                    .ConfigureAwait(false);
-            });
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri("http://localhost:51770") });
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:51770") });
+            
 
             await builder.Build().RunAsync();
         }

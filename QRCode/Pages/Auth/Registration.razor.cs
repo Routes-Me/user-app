@@ -72,7 +72,7 @@ namespace QRCode.Pages.Auth
                     messageType = AlertMessageType.Error;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
@@ -100,14 +100,15 @@ namespace QRCode.Pages.Auth
                 staticRole.Add(1);
 
                 if (isEmail)
+                {
                     EmailAddress = model.UserName;
-                else if (isPhone)
-                    Phone = model.UserName;
-
-                if (isEmail)
                     EncyptedPassword = await encryption.EncryptAndEncode(model.Password, IV, PASSWORD);
+                }
                 else if (isPhone)
+                {
+                    Phone = model.UserName;
                     EncyptedPassword = model.Password;
+                }
 
                 SignUpModel registration = new SignUpModel()
                 {
@@ -135,7 +136,7 @@ namespace QRCode.Pages.Auth
                 }
                 displaySpinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
@@ -149,7 +150,6 @@ namespace QRCode.Pages.Auth
             {
                 if (isEmail)
                 {
-                    System.Threading.Thread.Sleep(4000);
                     await UserSignup();
                 }
                 else if (isPhone)
@@ -177,7 +177,7 @@ namespace QRCode.Pages.Auth
                 }
                 displaySpinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;

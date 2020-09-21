@@ -86,26 +86,32 @@ namespace QRCode.Pages.Auth
         {
             try
             {
-                System.Threading.Thread.Sleep(1000);
                 EncryptionClass encryption = new EncryptionClass();
                 string IV = "Qz-N!p#ATb9_2MkL";
                 string PASSWORD = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
                 if (isEmail)
                 {
+                    string EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IV, PASSWORD);
                     SignInModel loginUser = new SignInModel()
                     {
                         UserName = model.UserName,
-                        Password = await encryption.EncryptAndEncode(model.Password, IV, PASSWORD),
+                        Password = EncryptedPassword,
                     };
 
                     var serializedValue = JsonSerializer.Serialize(loginUser);
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                     var result = await Http.PostAsync("/api/signin", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
-                    Response response = new Response();
+                    SignInResponse response = new SignInResponse();
                     response = JsonSerializer.Deserialize<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        var userInfo = new LocalUserInfo()
+                        {
+                            AccessToken = response.token,
+                        };
+                        await storageService.SetItemAsync("User", userInfo);
+                        await authenticationStateProvider.GetAuthenticationStateAsync();
                         displaySpinner = "d-none";
                         navigationManager.NavigateTo("/index");
                     }

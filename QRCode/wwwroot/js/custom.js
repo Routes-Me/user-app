@@ -156,3 +156,10 @@ function stopTimer() {
         document.getElementById('otpbox').placeholder = "Enter otp";
     $('.otp-send-success').addClass('d-none');
 }
+
+//$(document).on('click', '.available-see-all-card a', function (event) {
+//    $('.available-see-all-card').remove();
+//    $('.available-promotions').find('.card').removeClass('d-none');
+//});
+
+
