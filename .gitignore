@@ -7,3 +7,6 @@
 /QRCode/obj
 /QRCode.Shared/obj
 /QRCode.Shared/bin/Debug/netstandard2.0
+/BlazorUserApp/bin/Debug/netstandard2.1/wwwroot/_framework/_bin
+/BlazorUserApp/bin/Debug/netstandard2.1
+/BlazorUserApp/obj
