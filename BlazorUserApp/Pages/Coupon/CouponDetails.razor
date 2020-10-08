@@ -1,6 +1,9 @@
 ﻿@page "/coupon-details"
 @layout MainLayout
 @inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ILocalStorageService storageService
+@inject IJSRuntime JSRuntime;
 @*@attribute [Authorize]*@
 
 <style>
@@ -8,27 +11,35 @@
         background-color: #fff !important;
     }
 </style>
-<div class="custom-container">
+<div class="custom-container action-pages coupon-detail-container p-0">
     <div class="top-bar">
         <a href="/coupon" class="canecl-link d-flex align-items-center"><img src="images/back-icon.png" width="14" height="24" alt="" class="mr-2" /> Promotions</a>
-        <div class="profile-name"> <a href="/profile"> LA </a></div>
+        <h6>Redeem Coupon</h6>
     </div>
+
+    <AlertMessage Message="@message" MessageType="@messageType" />
     <div class="coupon-area coupon-detail">
         <div class="row">
             <div class="col-12">
-                <div class="single-card">
-                    <div class="top-part text-left">
-                        <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
-
-                    </div>
-                    <div class="bottom text-left ">
-                        <p><img src="images/brand-logo.png" width="25" height="25" alt="" /> </p>
-                        <p> <b>50% discount for any meal in any of our branches, happy summer holiday </b></p>
-                        <p>The offer not included the avenus branch</p>
-                        <p><span class="badge badge-light ">Valid till 19/12/2020</span></p>
-                    </div>
+                <div class="single-card coupon-detail-card">
+                    @foreach (var item in model)
+                    {
+                        <div class="top-part text-left">
+                            <div class="barcode-holder"><img src="@item.QrCodeImage" class="w-100" alt="" /></div>
+                        </div>
+                        <div class="bottom text-left ">
+                            <p><img src="@item.Promotion.LogoUrl" width="25" height="25" alt="" /> </p>
+                            <p> <b>@item.Promotion.Title </b></p>
+                            <p>@item.Promotion.Subtitle</p>
+                            @if (item.Promotion.ExpieryDate != null)
+                            {
+                                <p><span class="badge badge-light ">Valid till @(item.Promotion.ExpieryDate)</span></p>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

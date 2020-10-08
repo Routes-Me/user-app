@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BlazorUserApp.Models.CommonModels;
 using System.Net.Http.Json;
+using Newtonsoft.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -26,8 +27,6 @@ namespace BlazorUserApp
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, LocalAuthenticationStateProvider>();
-
-            
 
             await builder.Build().RunAsync();
         }

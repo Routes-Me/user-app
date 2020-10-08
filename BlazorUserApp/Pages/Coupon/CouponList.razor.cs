@@ -1,4 +1,6 @@
 ﻿using BlazorUserApp.Models;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
@@ -9,35 +11,33 @@ using System.Threading.Tasks;
 
 namespace BlazorUserApp.Pages.Coupon
 {
-    public partial class CouponDetails
+    public partial class CouponList
     {
         string spinner = "";
-        List<CouponDetailData> model = new List<CouponDetailData>();
+        List<QRCodeAll> model = new List<QRCodeAll>();
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationState { get; set; }
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                string couponId = string.Empty;
+                string userId = string.Empty;
                 Http.BaseAddress = null;
                 Http.BaseAddress = new Uri("http://localhost:63746");
-                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
-                {
-                    couponId = _id;
-                }
-                var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion");
+                var userState = authenticationState.Result;
+                userId = userState.User.FindFirst("UserId").Value;
+                var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
                 if (response.status == true)
                 {
                     foreach (var item in response.data)
                     {
-                        CouponDetailData qrModel = new CouponDetailData();
+                        QRCodeAll qrModel = new QRCodeAll();
                         qrModel.Id = item.couponId;
                         qrModel.Promotion = response.included.promotions.Where(x => x.PromotionId == Convert.ToInt32(item.promotionId)).FirstOrDefault();
-                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "https://userapp.routesme.com/coupons/" + item.couponId + "");
                         model.Add(qrModel);
                     }
                 }
@@ -47,7 +47,7 @@ namespace BlazorUserApp.Pages.Coupon
                     messageType = AlertMessageType.Error;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;

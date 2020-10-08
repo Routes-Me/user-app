@@ -28,10 +28,11 @@ namespace BlazorUserApp
                 var claims = new[]
                 {
                     new Claim("AccessToken", userInfo.Token),
-                    new Claim("Name", userInfo.Name),
-                    new Claim("Email", userInfo.Email),
-                    new Claim("Phone", userInfo.Phone),
-                    new Claim("UserId", userInfo.UserId),
+                    new Claim("Name", userInfo.tokenPayload.Name),
+                    new Claim("Email", userInfo.tokenPayload.Email),
+                    new Claim("Phone", userInfo.tokenPayload.PhoneNumber),
+                    new Claim("UserId", userInfo.tokenPayload.UserId),
+                    new Claim("isOfficer", userInfo.isOfficer.ToString()),
                 };
 
                 var identity = new ClaimsIdentity(claims, "BearerToken");

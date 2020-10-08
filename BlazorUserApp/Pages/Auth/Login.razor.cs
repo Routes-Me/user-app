@@ -9,18 +9,15 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace BlazorUserApp.Pages.Auth
 {
     public partial class Login
     {
         Models.DbModels.Login model = new Models.DbModels.Login();
-        bool isPhone = false;
-        bool isEmail = true;
-        string otpSentSuccess = "d-none";
-        string otpSentProgress = "d-none";
-        string displaySpinner = "d-none";
-        string message = string.Empty;
+        bool isPhone = false, isEmail = true;
+        string otpSentSuccess = "d-none", otpSentProgress = "d-none", spinner = "d-none", message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
 
         public async Task CheckEmailOrPhone()
@@ -53,7 +50,7 @@ namespace BlazorUserApp.Pages.Auth
                 };
                 var serializedValue = JsonConvert.SerializeObject(sendOtpModel);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                var result = await Http.PostAsync("/api/sendotp", stringContent).ConfigureAwait(false);
+                var result = await Http.PostAsync("/api/otp", stringContent).ConfigureAwait(false);
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<Response>(responseData);
                 if (response.status == true)
@@ -87,11 +84,18 @@ namespace BlazorUserApp.Pages.Auth
             try
             {
                 EncryptionClass encryption = new EncryptionClass();
-                string IV = "Qz-N!p#ATb9_2MkL";
-                string PASSWORD = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
+                string IVForAndroid = "Qz-N!p#ATb9_2MkL";
+                string KeyForAndroid = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
+                string IVForDashboard = "7w'}DkAkO!A&mLyL";
+                string KeyForDashboard = "Wf6cXM10cj_7B)V,";
+                string EncryptedPassword = string.Empty;
                 if (isEmail)
                 {
-                    string EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IV, PASSWORD);
+                    if (encryption.IndexOfBSign(model.Password) != -1)
+                        EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
+                    else
+                        EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForAndroid, KeyForAndroid);
+
                     SignInModel loginUser = new SignInModel()
                     {
                         UserName = model.UserName,
@@ -100,29 +104,51 @@ namespace BlazorUserApp.Pages.Auth
 
                     var serializedValue = JsonConvert.SerializeObject(loginUser);
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/qrsignin", stringContent).ConfigureAwait(false);
+                    var result = await Http.PostAsync("/api/qr/signin", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        string[] jwtEncodedSegments = response.token.Split('.');
+                        var payloadSegment = jwtEncodedSegments[1];
+                        var decodePayload = Convert.FromBase64String(payloadSegment);
+                        var decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+                        var jwtPayload = JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
+                        bool officer = false;
+                        foreach (var item in jwtPayload.Roles)
+                        {
+                            if (item.Privilege.ToLower() == "employee")
+                            {
+                                officer = true;
+                            }
+                        }
                         var userInfo = new LocalUserInfo()
                         {
-                            UserId = response.user.UserId,
-                            Name = response.user.Name,
-                            Email = response.user.Email,
-                            Phone = response.user.Phone,
-                            Token = response.user.Token
+                            Token = response.token,
+                            isOfficer = officer,
+                            tokenPayload = jwtPayload
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        displaySpinner = "d-none";
-                        navigationManager.NavigateTo("/coupon");
+                        var returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
+                        if (!string.IsNullOrEmpty(returnUrl))
+                        {
+                            string url = returnUrl.Replace("/?", "");
+                            navigationManager.NavigateTo(url);
+                        }
+                        else
+                        {
+                            navigationManager.NavigateTo("/coupon");
+                        }
+                        spinner = "d-none";
                     }
                     else
                     {
                         message = response.message;
                         messageType = AlertMessageType.Error;
+                        spinner = "d-none";
                     }
+                    spinner = "d-none";
                 }
                 else if (isPhone)
                 {
@@ -133,23 +159,43 @@ namespace BlazorUserApp.Pages.Auth
                     };
                     var serializedValue = JsonConvert.SerializeObject(otpUser);
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/qrverifysigninotp", stringContent).ConfigureAwait(false);
+                    var result = await Http.PostAsync("/api/qr/signin/otp/verify", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        string[] jwtEncodedSegments = response.token.Split('.');
+                        var payloadSegment = jwtEncodedSegments[1];
+                        var decodePayload = Convert.FromBase64String(payloadSegment);
+                        var decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+                        var jwtPayload = JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
+                        bool officer = false;
+                        foreach (var item in jwtPayload.Roles)
+                        {
+                            if (item.Privilege.ToLower() == "employee")
+                            {
+                                officer = true;
+                            }
+                        }
                         var userInfo = new LocalUserInfo()
                         {
-                            UserId = response.user.UserId,
-                            Name = response.user.Name,
-                            Email = response.user.Email,
-                            Phone = response.user.Phone,
-                            Token = response.user.Token
+                            Token = response.token,
+                            isOfficer = officer,
+                            tokenPayload = jwtPayload
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        displaySpinner = "d-none";
-                        navigationManager.NavigateTo("/coupon");
+                        var returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
+                        if (!string.IsNullOrEmpty(returnUrl))
+                        {
+                            string url = returnUrl.Replace("/?", "");
+                            navigationManager.NavigateTo(url);
+                        }
+                        else
+                        {
+                            navigationManager.NavigateTo("/coupon");
+                        }
+                        spinner = "d-none";
                     }
                     else
                     {
@@ -157,13 +203,14 @@ namespace BlazorUserApp.Pages.Auth
                         messageType = AlertMessageType.Error;
                     }
                 }
-                displaySpinner = "d-none";
+                spinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
             }
+            spinner = "d-none";
         }
     }
 }

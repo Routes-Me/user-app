@@ -1,0 +1,115 @@
+﻿@page "/redeem"
+@layout MainLayout
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navManager
+@inject ILocalStorageService storageService
+@inject HttpClient Http
+
+<style>
+    body {
+        background-color: #f2f2f7 !important;
+    }
+</style>
+<div class="custom-container action-pages p-0">
+    <div class="top-bar">
+        <a href="javascript:void(0);" class="canecl-link">Cancel</a>
+        <h6>Redeem Coupon</h6>
+    </div>
+    <AlertMessage Message="@message" MessageType="@messageType" />
+    <EditForm Model="model" OnValidSubmit="InsertRedemptions">
+        <div class="form-filed">
+            <h6>&nbsp;</h6>
+
+            @foreach (var item in couponListModel)
+            {
+                <div class="info-item row">
+                    <div class="col-6">
+                        <label>Employee</label>
+                    </div>
+                    <div class="col-6 text-right"><p>@UserName</p></div>
+                </div>
+                <h6>Coupon</h6>
+                <div class="info-item">
+                    <div class="form-group row mr-0 ml-0 border-after">
+                        <div class="col-6">
+                            <p><b class="d-block">ID</b> @item.Id</p>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end"> <img src="@item.Promotion.LogoUrl" width="25" height="25" alt="" class="border-radius-5" /> </div>
+                    </div>
+                    <div class="form-group row mr-0 ml-0 border-after">
+                        <div class="col-12">
+                            <p><b class="d-block">Promotion</b> @item.Promotion.Title</p>
+                        </div>
+                    </div>
+                    <div class="form-group row mr-0 ml-0 mb-0">
+                        <div class="col-6">
+                            <label>Validity</label>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end">
+                            @if (item.Promotion.ExpieryDate > DateTime.UtcNow)
+                            {
+                                <p>
+                                    <span class="badge badge-light-green border-radius-15 pl-2 pr-2">Valid till @item.Promotion.ExpieryDate</span>
+                                </p>
+                            }
+                            else
+                            {
+                                <p>
+                                    <span class="badge-danger badge-light-red border-radius-15 pl-2 pr-2">Expired</span>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <h6>Customer</h6>
+                <div class="info-item">
+                    <div class="form-group row mr-0 ml-0 border-after">
+                        <div class="col-6">
+                            <label>Name</label>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.User.Name </p></div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(item.User.Phone))
+                    {
+                        <div class="form-group row mr-0 ml-0 mb-0">
+                            <div class="col-6">
+                                <label>Phone</label>
+                            </div>
+                            <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.User.Phone</p></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group row mr-0 ml-0 mb-0">
+                            <div class="col-6">
+                                <label>Email</label>
+                            </div>
+                            <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.User.Email</p></div>
+                        </div>
+                    }
+
+                </div>
+
+                <h6>Redeem</h6>
+                <div class="info-item row">
+                    <div class="col-12">
+                        <RadzenTextBox @bind-Value="model.Pin" type="text" class="form-control  border-0 border-radius-0 p-0 height-auto pin-box" placeholder="Enter PIN Code"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="info-item row border-top-0">
+                    <div class="col-12">
+                        @*@if (item.Promotion.ExpieryDate > DateTime.UtcNow)
+                        {*@
+                            <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled"> Redeem </button>
+                        @*}
+                        else
+                        {
+                            <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled expired-offer"> Redeem </button>
+                        }*@
+                    </div>
+                </div>
+            }
+        </div>
+    </EditForm>
+</div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

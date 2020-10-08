@@ -17,6 +17,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.JSInterop;
+using System.Runtime.InteropServices;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BlazorUserApp.Pages.Coupon
 {
@@ -24,10 +26,101 @@ namespace BlazorUserApp.Pages.Coupon
     {
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
-        int counter = 0;
-        string spinner = "";
-        List<Promotion> model = new List<Promotion>();
-        string message = string.Empty;
+        int counter = 0, totalCount = 0;
+        string spinner = "", message = string.Empty;
+        List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
+
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty;
+                Http.BaseAddress = null;
+                Http.BaseAddress = new Uri("http://localhost:63746");
+                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
+                {
+                    promotionId = _id;
+                }
+                //promotionId ="1";
+                var userState = authenticationState.Result;
+                userId = userState.User.FindFirst("UserId").Value;
+
+                if (!string.IsNullOrEmpty(promotionId) && Convert.ToInt32(promotionId) > 0)
+                {
+                    Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
+                    {
+                        promotionId = promotionId,
+                        userId = userId
+                    };
+                    var serializedValue = JsonConvert.SerializeObject(coupon);
+                    var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
+                    var result = await Http.PostAsync("/api/coupons", stringContent).ConfigureAwait(false);
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<Response>(responseData);
+                    if (response.status == true)
+                    {
+                        await GetCouponByUser(userId);
+                    }
+                    else
+                    {
+                        if (response.message.Contains("Coupons already redeemed"))
+                            await JSRuntime.InvokeVoidAsync("displayPopupModel", response.message);
+                        else
+                            message = response.message;
+
+                        messageType = AlertMessageType.Error;
+                        await GetCouponByUser(userId);
+                    }
+                }
+                else
+                {
+                    await GetCouponByUser(userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                message = "Something went wrong!! Please try again.";
+                messageType = AlertMessageType.Error;
+            }
+            spinner = "d-none";
+        }
+
+
+        public async Task GetCouponByUser(string userId)
+        {
+            try
+            {
+                var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
+                //var result = await Http.GetAsync("/api/coupons?userId=1&include=promotion");
+                var responseData = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
+                if (response.status == true)
+                {
+                  
+
+                    totalCount = response.data.Count();
+                    foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
+                    {
+                        CouponListData couponList = new CouponListData();
+                        couponList.Id = item.couponId;
+                        couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == Convert.ToInt32(item.promotionId)).FirstOrDefault();
+                        couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "https://userapp.routesme.com/coupons/" + item.couponId + "");
+                        couponList.Count = totalCount;
+                        model.Add(couponList);
+                    }
+                }
+                else
+                {
+                    message = response.message;
+                    messageType = AlertMessageType.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

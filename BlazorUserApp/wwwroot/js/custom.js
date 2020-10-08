@@ -68,14 +68,14 @@ function clearValues() {
 }
 
 function checkValues() {
-   var name = $('.txt-name').val();
+    var name = $('.txt-name').val();
     var username = $('.txt-username').val();
     var password = $('.txt-password').val();
     var otp = $('.txt-otp').val();
 
     if (window.location.pathname == "/") {
         if (isEmail) {
-            if (username != '' && password != '') {
+            if (username != '' && password != '' && password.length >= 6) {
                 $('.signin-submit').removeClass('disabled');
             }
             else {
@@ -83,7 +83,7 @@ function checkValues() {
             }
         }
         else if (isPhone) {
-            if (username != '' && otp != '') {
+            if (username != '' && otp != '' && otp.length >= 6) {
                 $('.signin-submit').removeClass('disabled');
             }
             else {
@@ -93,7 +93,7 @@ function checkValues() {
     }
     else {
         if (isEmail) {
-            if (name != '' && username != '' && password != '') {
+            if (name != '' && username != '' && password != '' && password.length >= 6) {
                 $('.signup-submit').removeClass('disabled');
             }
             else {
@@ -101,7 +101,7 @@ function checkValues() {
             }
         }
         else if (isPhone) {
-            if (name != '' && username != '' && otp != '') {
+            if (name != '' && username != '' && otp != '' && otp.length >= 6) {
                 $('.signup-submit').removeClass('disabled');
             }
             else {
@@ -157,21 +157,43 @@ function stopTimer() {
     $('.otp-send-success').addClass('d-none');
 }
 
-//$(document).on('click', '.available-see-all-card a', function (event) {
-//    $('.available-see-all-card').remove();
-//    $('.available-promotions').find('.card').removeClass('d-none');
-//});
-
-
-function GenerateQRCode() {
-    debugger;
-    var qrcode = new QRCode("test", {
-        text: "http://jindo.dev.naver.com/collie",
+function GenerateQRCode(url) {
+    $('#parantcode').append('<div id="qrcode" class="d-none"></div>');
+    var qrcodjs = new QRCode(document.getElementById("qrcode"), {
+        text: url,
         width: 128,
         height: 128,
         colorDark: "#000000",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
     });
+    var imgBase64Data = qrcodjs._el.childNodes[0].toDataURL();
+    $('#qrcode').remove();
+    return imgBase64Data;
 }
 
+function displayPopupModel(message) {
+    $('.display-message').text(message);
+    $("#popupModel").modal();
+}
+
+$(document).on('keyup', '.pin-box', function (event) {
+    var pin = $(this).val();
+    if (pin.length >= 4) {
+        if ($('.btn-redeem').hasClass("expired-offer") == false) {
+            $('.btn-redeem').removeClass('disabled');
+        }
+        else {
+            $('.btn-redeem').addClass('disabled');
+        }
+    }
+    else {
+        $('.btn-redeem').addClass('disabled');
+    }
+});
+
+$('.pin-box').on("keydown", function (event) {
+    if (event.keyCode === 8 || event.which === 8 || event.keyCode == 46 || event.which == 46) {
+        event.preventDefault();
+    }
+});

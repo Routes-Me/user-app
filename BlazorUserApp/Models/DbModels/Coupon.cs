@@ -7,12 +7,20 @@ namespace BlazorUserApp.Models.DbModels
 {
     public class Coupon
     {
-        public string CouponId { get; set; }
-        public string PromotionId { get; set; }
-        public string UserId { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public Uri Uri { get; set; } 
-        public virtual Promotion Promotion { get; set; }
+        public string couponId { get; set; }
+        public string promotionId { get; set; }
+        public string userId { get; set; }
+        public string qrCodeUrl { get; set; }
+        public DateTime? createdAt { get; set; }
+    }
+
+    public class CouponModel
+    {
+        public string couponId { get; set; }
+        public string promotionId { get; set; }
+        public string userId { get; set; }
+        public DateTime? createdAt { get; set; }
+        public Promotion Promotion { get; set; }
     }
 }
     

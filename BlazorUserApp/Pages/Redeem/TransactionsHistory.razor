@@ -1,0 +1,39 @@
+﻿@page "/history"
+@layout MainLayout
+@inject NavigationManager navManager
+@inject HttpClient Http
+
+<style>
+    body {
+        background-color: #fff !important;
+    }
+</style>
+
+<div class="custom-container">
+    <div class="top-bar">
+        <h2> History </h2>
+        <div class="profile-name"> <a href="/profile"> LA </a></div>
+    </div>
+    <div class="search">
+        <input type="text" class="form-control" placeholder="Search ids, names …">
+    </div>
+    <ul class="theme-list">
+        @foreach (var item in model)
+        {
+            <li>
+                <a href="/details?id=@item.RedemptionId&officer=@item.OfficerId" class="link"></a>
+                <div class="left-side"> <img src="@item.LogoUrl" width="25" height="25" class="border-radius-5" alt="" /> </div>
+                <div class="right-side">
+                    <div class="row">
+                        <div class="col-6">@item.RedemptionId</div>
+                        <div class="col-6 text-right">@item.CreatedAt</div>
+                        <div class="col-12">
+                            <p class="short-info">@item.Title</p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

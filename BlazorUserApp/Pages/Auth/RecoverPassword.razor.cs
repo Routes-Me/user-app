@@ -11,14 +11,14 @@ namespace BlazorUserApp.Pages.Auth
         ResetPassword model = new ResetPassword();
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
-        string displaySpinner = "d-none";
+        string spinner = "d-none";
 
         public async Task ResetPassword()
         {
             try
             {
-               
-                string Url = "api/forgotpassword?email=" + model.Email;
+                spinner ="";
+                string Url = "api/account/password?email=" + model.Email;
                 var result = await Http.PostAsync(Url, null).ConfigureAwait(false);
                 var responseData = await result.Content.ReadAsStringAsync();
                 Response response = new Response();
@@ -33,13 +33,13 @@ namespace BlazorUserApp.Pages.Auth
                     message = response.message;
                     messageType = AlertMessageType.Error;
                 }
-                displaySpinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
             }
+            spinner = "d-none";
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿@page "/redirecttologin"
 @inject NavigationManager navigationManager
+@using System.Net;
 
 @code { protected override void OnInitialized()
-            {
-                navigationManager.NavigateTo("/");
-            } }
+    {
+        var returnUrl = WebUtility.UrlEncode(new Uri(navigationManager.Uri).PathAndQuery);
+        navigationManager.NavigateTo($"/?{returnUrl}");
+        //navigationManager.NavigateTo("/");
+    } }

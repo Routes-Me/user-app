@@ -1,0 +1,18 @@
+﻿@page "/success"
+@layout MainLayout
+@inject NavigationManager navManager
+
+<style>
+    body {
+        background-color: #fff !important;
+    }
+</style>
+
+<div class="custom-container redeemen-sucess-container">
+    <img src="images/correct-icon.png" width="117" height="117" alt="" />
+    <h2>Redeemed Sucessfully</h2>
+    <p>Transaction ID</p>
+    <p class="mt-1"><b>@trasactionId</b></p>
+    <button class="btn btn-success" @onclick="@Redirect">Continue</button>
+</div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

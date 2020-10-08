@@ -1,0 +1,88 @@
+﻿@page "/details"
+@layout MainLayout
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navManager
+@inject ILocalStorageService storageService
+@inject HttpClient Http
+
+<style>
+    body {
+        background-color: #f2f2f7 !important;
+    }
+</style>
+
+<div class="custom-container action-pages p-0">
+    <div class="top-bar">
+        <a href="/history?id=@officerId" class="canecl-link d-flex align-items-center"><img src="images/back-icon.png" width="14" height="24" alt="" class="mr-2" /> History</a>
+        <h6>Transaction Details</h6>
+    </div>
+    <div class="form-filed">
+        @foreach (var item in model)
+        {
+            <h6>transaction</h6>
+            <div class="info-item">
+                <div class="form-group row mr-0 ml-0 border-after">
+                    <div class="col-6">
+                        <label>ID</label>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.RedemptionId</p> </div>
+                </div>
+
+                <div class="form-group row mr-0 ml-0 border-after">
+                    <div class="col-6">
+                        <label>Date</label>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.CreatedAt</p> </div>
+                </div>
+                <div class="form-group row mr-0 ml-0 mb-0">
+                    <div class="col-6">
+                        <label>Employee</label>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end"><p>@UserName</p></div>
+                </div>
+            </div>
+            <h6>Coupon</h6>
+            <div class="info-item">
+                <div class="form-group row mr-0 ml-0 border-after">
+                    <div class="col-6">
+                        <p><b class="d-block">ID</b> @item.CouponId</p>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end"> <img src="images/brand-logo.png" width="25" height="25" alt="" class="border-radius-5" /> </div>
+                </div>
+                <div class="form-group row mr-0 ml-0 mb-0">
+                    <div class="col-12">
+                        <p><b class="d-block">Promotion</b> @item.coupons.Promotion.Title</p>
+                    </div>
+                </div>
+            </div>
+            <h6>Customer</h6>
+            <div class="info-item">
+                <div class="form-group row mr-0 ml-0 border-after">
+                    <div class="col-6">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.Users.Name </p></div>
+                </div>
+                @if (!string.IsNullOrEmpty(item.Users.Phone))
+                {
+                    <div class="form-group row mr-0 ml-0 mb-0">
+                        <div class="col-6">
+                            <label>Phone</label>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.Users.Phone</p></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group row mr-0 ml-0 mb-0">
+                        <div class="col-6">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.Users.Email</p></div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

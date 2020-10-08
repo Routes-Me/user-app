@@ -1,13 +1,13 @@
 {
-  "name": "BlazorUserApp",
-  "short_name": "UserApp",
+  "name": "Routes App",
+  "short_name": "Routes App",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#03173d",
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "icon.png",
       "type": "image/png",
       "sizes": "512x512"
     }

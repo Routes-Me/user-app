@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace BlazorUserApp.Pages.Auth
 {
@@ -21,7 +22,7 @@ namespace BlazorUserApp.Pages.Auth
         bool isEmail = true;
         string otpSentSuccess = "d-none";
         string otpSentProgress = "d-none";
-        string displaySpinner = "d-none";
+        string spinner = "d-none";
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
 
@@ -53,12 +54,11 @@ namespace BlazorUserApp.Pages.Auth
                 {
                     Phone = PhoneNumber
                 };
-                var serializedValue = JsonSerializer.Serialize(sendOtpModel);
+                var serializedValue = JsonConvert.SerializeObject(sendOtpModel);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                var result = await Http.PostAsync("/api/qrsendotp", stringContent).ConfigureAwait(false);
+                var result = await Http.PostAsync("/api/qr/otp", stringContent).ConfigureAwait(false);
                 var responseData = await result.Content.ReadAsStringAsync();
-                Response response = new Response();
-                response = JsonSerializer.Deserialize<Response>(responseData);
+                var response = JsonConvert.DeserializeObject<Response>(responseData);
                 if (response.status == true)
                 {
                     otpSentProgress = "d-none";
@@ -90,24 +90,31 @@ namespace BlazorUserApp.Pages.Auth
             try
             {
                 string Phone = string.Empty;
-                string EncyptedPassword = string.Empty;
+                string EncryptedPassword = string.Empty;
                 string EmailAddress = string.Empty;
-                List<int> staticRole = new List<int>();
+                List<privilege> Roles = new List<privilege>();
+                privilege privilege = new privilege();
                 EncryptionClass encryption = new EncryptionClass();
-                
-                string IV = "Qz-N!p#ATb9_2MkL";
-                string PASSWORD = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
-                staticRole.Add(1);
+                string IVForAndroid = "Qz-N!p#ATb9_2MkL";
+                string KeyForAndroid = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
+                string IVForDashboard = "7w'}DkAkO!A&mLyL";
+                string KeyForDashboard = "Wf6cXM10cj_7B)V,";
+                privilege.Application = "userapp";
+                privilege.Privilege = "user";
+                Roles.Add(privilege);
 
                 if (isEmail)
                 {
                     EmailAddress = model.UserName;
-                    EncyptedPassword = await encryption.EncryptAndEncode(model.Password, IV, PASSWORD);
+                    if (encryption.IndexOfBSign(model.Password) != -1)
+                        EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
+                    else
+                        EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForAndroid, KeyForAndroid);
                 }
                 else if (isPhone)
                 {
                     Phone = model.UserName;
-                    EncyptedPassword = model.Password;
+                    EncryptedPassword = model.Password;
                 }
 
                 SignUpModel registration = new SignUpModel()
@@ -115,18 +122,17 @@ namespace BlazorUserApp.Pages.Auth
                     Name = model.Name,
                     Email = EmailAddress,
                     PhoneNumber = Phone,
-                    Password = EncyptedPassword,
-                    Roles = staticRole
+                    Password = EncryptedPassword,
+                    Roles = Roles
                 };
-                var serializedValue = JsonSerializer.Serialize(registration);
+                var serializedValue = JsonConvert.SerializeObject(registration);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                 var result = await Http.PostAsync("/api/signup", stringContent).ConfigureAwait(false);
                 var responseData = await result.Content.ReadAsStringAsync();
-                QRUsersResponse response = new QRUsersResponse();
-                response = JsonSerializer.Deserialize<QRUsersResponse>(responseData);
+                var response = JsonConvert.DeserializeObject<QRUsersResponse>(responseData);
                 if (response.status == true)
                 {
-                    displaySpinner = "d-none";
+                    spinner = "d-none";
                     navigationManager.NavigateTo("/");
                 }
                 else
@@ -134,7 +140,7 @@ namespace BlazorUserApp.Pages.Auth
                     message = response.message;
                     messageType = AlertMessageType.Error;
                 }
-                displaySpinner = "d-none";
+                spinner = "d-none";
             }
             catch (Exception)
             {
@@ -159,12 +165,11 @@ namespace BlazorUserApp.Pages.Auth
                         Phone = model.UserName,
                         Code = model.Otp
                     };
-                    var serializedValue = JsonSerializer.Serialize(verifyOtpModel);
+                    var serializedValue = JsonConvert.SerializeObject(verifyOtpModel);
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/qrverifyotp", stringContent).ConfigureAwait(false);
+                    var result = await Http.PostAsync("/api/qr/otp/verify", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
-                    Response response = new Response();
-                    response = JsonSerializer.Deserialize<Response>(responseData);
+                    var response = JsonConvert.DeserializeObject<Response>(responseData);
                     if (response.status == true)
                     {
                         await UserSignup();
@@ -175,7 +180,7 @@ namespace BlazorUserApp.Pages.Auth
                         messageType = AlertMessageType.Error;
                     }
                 }
-                displaySpinner = "d-none";
+                spinner = "d-none";
             }
             catch (Exception)
             {
