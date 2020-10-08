@@ -4,6 +4,7 @@
 @inject NavigationManager navManager
 @inject ILocalStorageService storageService
 @inject HttpClient Http
+@attribute [Authorize]
 
 <style>
     body {
@@ -99,13 +100,13 @@
                 <div class="info-item row border-top-0">
                     <div class="col-12">
                         @*@if (item.Promotion.ExpieryDate > DateTime.UtcNow)
-                        {*@
-                            <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled"> Redeem </button>
+                            {*@
+                        <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled"> Redeem </button>
                         @*}
-                        else
-                        {
-                            <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled expired-offer"> Redeem </button>
-                        }*@
+                            else
+                            {
+                                <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled expired-offer"> Redeem </button>
+                            }*@
                     </div>
                 </div>
             }
