@@ -236,7 +236,7 @@ namespace BlazorUserApp.Pages.Auth
                 }
                 spinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 spinner = "d-none";
                 message = "Something went wrong!! Please try again.";

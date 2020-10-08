@@ -73,6 +73,15 @@ function checkValues() {
     var password = $('.txt-password').val();
     var otp = $('.txt-otp').val();
 
+    var emailReg = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    var intRegex = /^\d+$/;
+    if (emailReg.test(username)) {
+        isEmail = true;
+    }
+    else if (intRegex.test(username)) {
+        isPhone = true;
+    }
+
     if (window.location.pathname == "/") {
         if (isEmail) {
             if (username != '' && password != '' && password.length >= 4) {
@@ -115,7 +124,7 @@ function checkValues() {
 function checkEmailOrPhone() {
     var username = $('.txt-username').val();
     var emailReg = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    var intRegex = /[0-9 -()+]+$/;
+    var intRegex = /^\d+$/;
     if (emailReg.test(username)) {
         isEmail = true;
     }
