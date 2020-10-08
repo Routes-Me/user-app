@@ -139,6 +139,7 @@ namespace BlazorUserApp.Pages.Auth
                 {
                     message = response.message;
                     messageType = AlertMessageType.Error;
+                    spinner = "d-none";
                 }
                 spinner = "d-none";
             }
@@ -146,6 +147,7 @@ namespace BlazorUserApp.Pages.Auth
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
+                spinner = "d-none";
             }
         }
 
@@ -178,6 +180,7 @@ namespace BlazorUserApp.Pages.Auth
                     {
                         message = response.message;
                         messageType = AlertMessageType.Error;
+                        spinner = "d-none";
                     }
                 }
                 spinner = "d-none";
@@ -186,6 +189,7 @@ namespace BlazorUserApp.Pages.Auth
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
+                spinner = "d-none";
             }
         }
     }

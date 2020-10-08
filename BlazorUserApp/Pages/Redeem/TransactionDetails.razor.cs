@@ -13,7 +13,7 @@ namespace BlazorUserApp.Pages.Redeem
 {
     public partial class TransactionDetails
     {
-        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, redemptionId = string.Empty, officerId = string.Empty;
+        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, redemptionId = string.Empty, officerId = string.Empty, token = string.Empty;
         List<RedeemDetailModel> model = new List<RedeemDetailModel>();
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
@@ -24,11 +24,7 @@ namespace BlazorUserApp.Pages.Redeem
             {
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
-
-                Http.BaseAddress = null;
-                Http.BaseAddress = new Uri("http://localhost:63746");
                 var uri = navManager.ToAbsoluteUri(navManager.Uri);
-                
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     redemptionId = _id;
@@ -37,6 +33,8 @@ namespace BlazorUserApp.Pages.Redeem
                 {
                     officerId = _officerid;
                 }
+                token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons/redeem/" + redemptionId + "?include=coupon,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);

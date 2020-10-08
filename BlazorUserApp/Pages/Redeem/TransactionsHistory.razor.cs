@@ -1,4 +1,6 @@
 ﻿using BlazorUserApp.Models;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System;
@@ -10,9 +12,11 @@ namespace BlazorUserApp.Pages.Redeem
 {
     public partial class TransactionsHistory
     {
-        string spinner = string.Empty, message = string.Empty, officerId = string.Empty;
+        string spinner = string.Empty, message = string.Empty, officerId = string.Empty, token = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         List<RedeemHistory> model = new List<RedeemHistory>();
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationState { get; set; }
         protected override async Task OnInitializedAsync()
         {
             try
@@ -22,8 +26,9 @@ namespace BlazorUserApp.Pages.Redeem
                 {
                     officerId = _id;
                 }
-                Http.BaseAddress = null;
-                Http.BaseAddress = new Uri("http://localhost:63746");
+                var userState = authenticationState.Result;
+                token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons/redeem?officerId=" + officerId + "&include=coupon");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
@@ -48,7 +53,7 @@ namespace BlazorUserApp.Pages.Redeem
                 }
                 spinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;

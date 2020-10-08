@@ -49,9 +49,9 @@ namespace BlazorUserApp.Models
                             return new ValidationResult("Password is required.");
                         }
 
-                        if (password.Length < 6)
+                        if (password.Length < 4)
                         {
-                            return new ValidationResult("Password must be at least 6 characters long.");
+                            return new ValidationResult("Password must be at least 4 characters long.");
                         }
 
                         if (password.Length > 50)

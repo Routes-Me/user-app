@@ -110,11 +110,18 @@ namespace BlazorUserApp.Pages.Auth
                     if (response.status == true)
                     {
                         string[] jwtEncodedSegments = response.token.Split('.');
-                        var payloadSegment = jwtEncodedSegments[1];
-                        var decodePayload = Convert.FromBase64String(payloadSegment);
-                        var decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+                        string decodedUtf8Payload = string.Empty;
+                        if (jwtEncodedSegments != null)
+                        {
+                            var payloadSegment = jwtEncodedSegments[1];
+                            var decodePayload = Convert.FromBase64String(payloadSegment);
+                            decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+                        }
+
                         var jwtPayload = JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
                         bool officer = false;
+                        string OfficerId = string.Empty;
+
                         foreach (var item in jwtPayload.Roles)
                         {
                             if (item.Privilege.ToLower() == "employee")
@@ -122,9 +129,28 @@ namespace BlazorUserApp.Pages.Auth
                                 officer = true;
                             }
                         }
+
+                        if (officer == true)
+                        {
+                            Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
+                            var officerResult = await Http.GetAsync("/api/officers?userId=" + jwtPayload.UserId + "");
+                            var officerResponseData = await officerResult.Content.ReadAsStringAsync();
+                            var officerResponse = JsonConvert.DeserializeObject<OfficersResponse>(officerResponseData);
+                            if (officerResponse.status == true)
+                            {
+                                if (officerResponse.data.Count > 0)
+                                {
+                                    foreach (var itemData in officerResponse.data)
+                                    {
+                                        OfficerId = itemData.OfficerId;
+                                    }
+                                }
+                            }
+                        }
                         var userInfo = new LocalUserInfo()
                         {
                             Token = response.token,
+                            OfficerId = OfficerId,
                             isOfficer = officer,
                             tokenPayload = jwtPayload
                         };
@@ -165,9 +191,14 @@ namespace BlazorUserApp.Pages.Auth
                     if (response.status == true)
                     {
                         string[] jwtEncodedSegments = response.token.Split('.');
-                        var payloadSegment = jwtEncodedSegments[1];
-                        var decodePayload = Convert.FromBase64String(payloadSegment);
-                        var decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+                        string decodedUtf8Payload = string.Empty;
+                        if (jwtEncodedSegments != null)
+                        {
+                            var payloadSegment = jwtEncodedSegments[1];
+                            var decodePayload = Convert.FromBase64String(payloadSegment);
+                            decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+                        }
+
                         var jwtPayload = JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
                         bool officer = false;
                         foreach (var item in jwtPayload.Roles)
@@ -205,10 +236,12 @@ namespace BlazorUserApp.Pages.Auth
                 }
                 spinner = "d-none";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                spinner = "d-none";
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
+
             }
             spinner = "d-none";
         }

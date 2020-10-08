@@ -13,9 +13,8 @@ namespace BlazorUserApp.Pages.Coupon
 {
     public partial class CouponList
     {
-        string spinner = "";
+        string spinner = "", message = string.Empty, userId = string.Empty, token = string.Empty;
         List<QRCodeAll> model = new List<QRCodeAll>();
-        string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
@@ -23,11 +22,10 @@ namespace BlazorUserApp.Pages.Coupon
         {
             try
             {
-                string userId = string.Empty;
-                Http.BaseAddress = null;
-                Http.BaseAddress = new Uri("http://localhost:63746");
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
+                token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);

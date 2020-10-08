@@ -22,7 +22,7 @@ namespace BlazorUserApp
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri("http://localhost:51770") });
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri("http://vmtprojectstage.uaenorth.cloudapp.azure.com:5000") });
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();

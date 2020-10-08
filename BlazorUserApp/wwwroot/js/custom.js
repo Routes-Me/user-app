@@ -75,7 +75,7 @@ function checkValues() {
 
     if (window.location.pathname == "/") {
         if (isEmail) {
-            if (username != '' && password != '' && password.length >= 6) {
+            if (username != '' && password != '' && password.length >= 4) {
                 $('.signin-submit').removeClass('disabled');
             }
             else {
@@ -93,7 +93,7 @@ function checkValues() {
     }
     else {
         if (isEmail) {
-            if (name != '' && username != '' && password != '' && password.length >= 6) {
+            if (name != '' && username != '' && password != '' && password.length >= 4) {
                 $('.signup-submit').removeClass('disabled');
             }
             else {

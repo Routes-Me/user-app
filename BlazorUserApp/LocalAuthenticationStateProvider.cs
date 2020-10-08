@@ -33,6 +33,7 @@ namespace BlazorUserApp
                     new Claim("Phone", userInfo.tokenPayload.PhoneNumber),
                     new Claim("UserId", userInfo.tokenPayload.UserId),
                     new Claim("isOfficer", userInfo.isOfficer.ToString()),
+                    new Claim("OfficerId", userInfo.OfficerId.ToString()),
                 };
 
                 var identity = new ClaimsIdentity(claims, "BearerToken");

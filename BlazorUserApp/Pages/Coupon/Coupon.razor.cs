@@ -30,23 +30,21 @@ namespace BlazorUserApp.Pages.Coupon
         string spinner = "", message = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
+        string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty, token = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty;
-                Http.BaseAddress = null;
-                Http.BaseAddress = new Uri("http://localhost:63746");
                 var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     promotionId = _id;
                 }
-                //promotionId ="1";
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
-
+                token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 if (!string.IsNullOrEmpty(promotionId) && Convert.ToInt32(promotionId) > 0)
                 {
                     Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
@@ -92,14 +90,12 @@ namespace BlazorUserApp.Pages.Coupon
         {
             try
             {
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
-                //var result = await Http.GetAsync("/api/coupons?userId=1&include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
                 if (response.status == true)
                 {
-                  
-
                     totalCount = response.data.Count();
                     foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
                     {

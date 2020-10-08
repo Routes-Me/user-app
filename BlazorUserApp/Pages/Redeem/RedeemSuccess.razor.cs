@@ -1,4 +1,6 @@
 ﻿using BlazorUserApp.Models;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,8 @@ namespace BlazorUserApp.Pages.Redeem
     {
         string spinner = string.Empty, message = string.Empty, trasactionId = string.Empty, officerId = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationState { get; set; }
         protected override async Task OnInitializedAsync()
         {
             try
@@ -33,7 +37,8 @@ namespace BlazorUserApp.Pages.Redeem
         public void Redirect()
         {
             spinner = string.Empty;
-            officerId = "2";
+            var userState = authenticationState.Result;
+            officerId = userState.User.FindFirst("OfficerId").Value;
             navManager.NavigateTo("/history?id=" + officerId + "");
             spinner = "d-none";
         }

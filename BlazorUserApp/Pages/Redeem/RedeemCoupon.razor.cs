@@ -16,7 +16,7 @@ namespace BlazorUserApp.Pages.Redeem
 {
     public partial class RedeemCoupon
     {
-        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, couponId = string.Empty, expiredCode = string.Empty;
+        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, couponId = string.Empty, expiredCode = string.Empty, token = string.Empty;
         List<CouponDetailData> couponListModel = new List<CouponDetailData>();
         Redemption model = new Redemption();
 
@@ -27,16 +27,15 @@ namespace BlazorUserApp.Pages.Redeem
         {
             try
             {
-                var userState = authenticationState.Result;
-                UserName = userState.User.FindFirst("Name").Value;
-                Http.BaseAddress = null;
-                Http.BaseAddress = new Uri("http://localhost:63746");
                 var uri = navManager.ToAbsoluteUri(navManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     couponId = _id;
                 }
-                couponId = "3";
+                var userState = authenticationState.Result;
+                UserName = userState.User.FindFirst("Name").Value;
+                token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -81,24 +80,9 @@ namespace BlazorUserApp.Pages.Redeem
                 var userState = authenticationState.Result;
                 bool isOfficer = Convert.ToBoolean(userState.User.FindFirst("isOfficer").Value);
                 string OfficerId = string.Empty;
-                if (isOfficer == false)
+                if (isOfficer == true)
                 {
-                    //Http.BaseAddress = "http://localhost:62574";
-                    Http.BaseAddress = new Uri("http://localhost:62574");
-                    string UserId = userState.User.FindFirst("UserId").Value;
-                    var officerResult = await Http.GetAsync("/api/officers?userId=" + UserId + "");
-                    var officerResponseData = await officerResult.Content.ReadAsStringAsync();
-                    var officerResponse = JsonConvert.DeserializeObject<OfficersResponse>(officerResponseData);
-                    if (officerResponse.status == true)
-                    {
-                        if (officerResponse.data.Count > 0)
-                        {
-                            foreach (var item in officerResponse.data)
-                            {
-                                OfficerId = item.OfficerId;
-                            }
-                        }
-                    }
+                    OfficerId = userState.User.FindFirst("OfficerId").Value;
                 }
 
                 spinner = string.Empty;
@@ -108,8 +92,7 @@ namespace BlazorUserApp.Pages.Redeem
                     OfficerId = OfficerId,
                     Pin = model.Pin
                 };
-                Http.BaseAddress = null;
-                Http.BaseAddress = new Uri("http://localhost:63746");
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var serializedValue = JsonConvert.SerializeObject(redemption);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                 var result = await Http.PostAsync("/api/coupons/redeem", stringContent).ConfigureAwait(false);
@@ -126,7 +109,7 @@ namespace BlazorUserApp.Pages.Redeem
                 }
                 spinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
