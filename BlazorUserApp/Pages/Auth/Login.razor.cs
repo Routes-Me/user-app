@@ -106,58 +106,20 @@ namespace BlazorUserApp.Pages.Auth
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                     var result = await Http.PostAsync("/api/qr/signin", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
+                    var response = JsonConvert.DeserializeObject<QrSignInResponse>(responseData);
                     if (response.status == true)
                     {
-                        string[] jwtEncodedSegments = response.token.Split('.');
-                        string decodedUtf8Payload = string.Empty;
-                        if (jwtEncodedSegments != null)
-                        {
-                            var payloadSegment = jwtEncodedSegments[1];
-                            var decodePayload = Convert.FromBase64String(payloadSegment);
-                            decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
-                        }
 
-                        var jwtPayload = JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
-                        bool officer = false;
-                        string OfficerId = string.Empty;
-
-                        foreach (var item in jwtPayload.Roles)
-                        {
-                            if (item.Privilege.ToLower() == "employee")
-                            {
-                                officer = true;
-                            }
-                        }
-
-                        if (officer == true)
-                        {
-                            Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
-                            var officerResult = await Http.GetAsync("/api/officers?userId=" + jwtPayload.UserId + "");
-                            var officerResponseData = await officerResult.Content.ReadAsStringAsync();
-                            var officerResponse = JsonConvert.DeserializeObject<OfficersResponse>(officerResponseData);
-                            if (officerResponse.status == true)
-                            {
-                                if (officerResponse.data.Count > 0)
-                                {
-                                    foreach (var itemData in officerResponse.data)
-                                    {
-                                        OfficerId = itemData.OfficerId;
-                                    }
-                                }
-                            }
-                        }
                         var userInfo = new LocalUserInfo()
                         {
-                            Token = response.token,
-                            OfficerId = OfficerId,
-                            isOfficer = officer,
-                            tokenPayload = jwtPayload
+                            Token = response.Token,
+                            loginUser = response.user
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
+                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.Token}");
                         var returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
-                        if (!string.IsNullOrEmpty(returnUrl))
+                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl != null)
                         {
                             string url = returnUrl.Replace("/?", "");
                             navigationManager.NavigateTo(url);
@@ -166,6 +128,8 @@ namespace BlazorUserApp.Pages.Auth
                         {
                             navigationManager.NavigateTo("/coupon");
                         }
+
+                        //navigationManager.NavigateTo("/coupon");
                         spinner = "d-none";
                     }
                     else
@@ -187,37 +151,18 @@ namespace BlazorUserApp.Pages.Auth
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                     var result = await Http.PostAsync("/api/qr/signin/otp/verify", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
+                    var response = JsonConvert.DeserializeObject<QrSignInResponse>(responseData);
                     if (response.status == true)
                     {
-                        string[] jwtEncodedSegments = response.token.Split('.');
-                        string decodedUtf8Payload = string.Empty;
-                        if (jwtEncodedSegments != null)
-                        {
-                            var payloadSegment = jwtEncodedSegments[1];
-                            var decodePayload = Convert.FromBase64String(payloadSegment);
-                            decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
-                        }
-
-                        var jwtPayload = JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
-                        bool officer = false;
-                        foreach (var item in jwtPayload.Roles)
-                        {
-                            if (item.Privilege.ToLower() == "employee")
-                            {
-                                officer = true;
-                            }
-                        }
                         var userInfo = new LocalUserInfo()
                         {
-                            Token = response.token,
-                            isOfficer = officer,
-                            tokenPayload = jwtPayload
+                            Token = response.Token,
+                            loginUser = response.user
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
                         var returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
-                        if (!string.IsNullOrEmpty(returnUrl))
+                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl != null)
                         {
                             string url = returnUrl.Replace("/?", "");
                             navigationManager.NavigateTo(url);
@@ -226,6 +171,8 @@ namespace BlazorUserApp.Pages.Auth
                         {
                             navigationManager.NavigateTo("/coupon");
                         }
+
+                        //navigationManager.NavigateTo("/coupon");
                         spinner = "d-none";
                     }
                     else

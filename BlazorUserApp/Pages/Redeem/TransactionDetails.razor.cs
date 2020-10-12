@@ -33,8 +33,6 @@ namespace BlazorUserApp.Pages.Redeem
                 {
                     officerId = _officerid;
                 }
-                token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons/redeem/" + redemptionId + "?include=coupon,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);

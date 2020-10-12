@@ -27,9 +27,6 @@ namespace BlazorUserApp.Pages.Coupon
                 {
                     couponId = _id;
                 }
-                var userState = authenticationState.Result;
-                token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -39,7 +36,7 @@ namespace BlazorUserApp.Pages.Coupon
                     {
                         CouponDetailData qrModel = new CouponDetailData();
                         qrModel.Id = item.couponId;
-                        qrModel.Promotion = response.included.promotions.Where(x => x.PromotionId == Convert.ToInt32(item.promotionId)).FirstOrDefault();
+                        qrModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
                         qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "https://userapp.routesme.com/coupons/" + item.couponId + "");
                         model.Add(qrModel);
                     }

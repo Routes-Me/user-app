@@ -38,7 +38,11 @@ namespace BlazorUserApp.Models.DbModels
         public string UserId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Token { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Password { get; set; }
+        public List<UserRoleForToken> Roles { get; set; }
+        public string InstitutionId { get; set; }
+        public bool isOfficer { get; set; }
+        public string OfficerId { get; set; }
     }
 }

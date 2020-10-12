@@ -47,10 +47,10 @@
                             <label>Validity</label>
                         </div>
                         <div class="col-6 d-flex align-items-center justify-content-end">
-                            @if (item.Promotion.ExpieryDate > DateTime.UtcNow)
+                            @if (item.Promotion.EndAt > DateTime.UtcNow)
                             {
                                 <p>
-                                    <span class="badge badge-light-green border-radius-15 pl-2 pr-2">Valid till @item.Promotion.ExpieryDate</span>
+                                    <span class="badge badge-light-green border-radius-15 pl-2 pr-2">Valid till @item.Promotion.EndAt</span>
                                 </p>
                             }
                             else

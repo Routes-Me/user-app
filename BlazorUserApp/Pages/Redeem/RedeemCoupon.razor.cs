@@ -34,8 +34,6 @@ namespace BlazorUserApp.Pages.Redeem
                 }
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
-                token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -47,7 +45,7 @@ namespace BlazorUserApp.Pages.Redeem
                         {
                             CouponDetailData couponModel = new CouponDetailData();
                             couponModel.Id = item.couponId;
-                            couponModel.Promotion = response.included.promotions.Where(x => x.PromotionId == Convert.ToInt32(item.promotionId)).FirstOrDefault();
+                            couponModel.Promotion = response.included.promotions.Where(x => x.PromotionId ==item.promotionId).FirstOrDefault();
                             couponModel.User = response.included.users.Where(x => x.UserId == item.userId).FirstOrDefault();
                             couponListModel.Add(couponModel);
                         }
@@ -77,22 +75,24 @@ namespace BlazorUserApp.Pages.Redeem
         {
             try
             {
+                spinner = string.Empty;
                 var userState = authenticationState.Result;
                 bool isOfficer = Convert.ToBoolean(userState.User.FindFirst("isOfficer").Value);
+
                 string OfficerId = string.Empty;
+                string InstitutionId = string.Empty;
                 if (isOfficer == true)
                 {
                     OfficerId = userState.User.FindFirst("OfficerId").Value;
+                    InstitutionId = userState.User.FindFirst("InstitutionId").Value;
                 }
-
-                spinner = string.Empty;
                 Redemption redemption = new Redemption()
                 {
                     CouponId = couponId,
                     OfficerId = OfficerId,
-                    Pin = model.Pin
+                    InstitutionId = InstitutionId,
+                    Pin = model.Pin 
                 };
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var serializedValue = JsonConvert.SerializeObject(redemption);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                 var result = await Http.PostAsync("/api/coupons/redeem", stringContent).ConfigureAwait(false);

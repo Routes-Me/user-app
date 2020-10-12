@@ -44,7 +44,6 @@ namespace BlazorUserApp.Pages.Coupon
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
                 token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 if (!string.IsNullOrEmpty(promotionId) && Convert.ToInt32(promotionId) > 0)
                 {
                     Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
@@ -79,7 +78,7 @@ namespace BlazorUserApp.Pages.Coupon
             }
             catch (Exception ex)
             {
-                message = "Something went wrong!! Please try again.";
+                message = "Something went wrong!! Please try again. " + ex.Message;
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";
@@ -90,7 +89,6 @@ namespace BlazorUserApp.Pages.Coupon
         {
             try
             {
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -101,7 +99,7 @@ namespace BlazorUserApp.Pages.Coupon
                     {
                         CouponListData couponList = new CouponListData();
                         couponList.Id = item.couponId;
-                        couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == Convert.ToInt32(item.promotionId)).FirstOrDefault();
+                        couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
                         couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "https://userapp.routesme.com/coupons/" + item.couponId + "");
                         couponList.Count = totalCount;
                         model.Add(couponList);

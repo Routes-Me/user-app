@@ -10,6 +10,7 @@ namespace BlazorUserApp.Models.DbModels
     {
         public string CouponId { get; set; }
         public string OfficerId { get; set; }
+        public string InstitutionId { get; set; }
         public string Pin { get; set; }
     }
 

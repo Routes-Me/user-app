@@ -21,10 +21,13 @@ namespace BlazorUserApp.Models
         public string email { get; set; }
     }
 
-    public class SignInResponse : Response
+    public class QrSignInResponse : Response
     {
-        public string token { get; set; }
+        public LoginUser user { get; set; }
+        public string Token { get; set; }
     }
+
+    
 
     public class Pagination
     {

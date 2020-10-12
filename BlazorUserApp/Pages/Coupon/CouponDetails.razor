@@ -31,9 +31,9 @@
                             <p><img src="@item.Promotion.LogoUrl" width="25" height="25" alt="" /> </p>
                             <p> <b>@item.Promotion.Title </b></p>
                             <p>@item.Promotion.Subtitle</p>
-                            @if (item.Promotion.ExpieryDate != null)
+                            @if (item.Promotion.EndAt != null)
                             {
-                                <p><span class="badge badge-light ">Valid till @(item.Promotion.ExpieryDate)</span></p>
+                                <p><span class="badge badge-light ">Valid till @(item.Promotion.EndAt)</span></p>
                             }
                         </div>
                     }

@@ -11,6 +11,6 @@ namespace BlazorUserApp.Models
         public string Token { get; set; }
         public string OfficerId { get; set; }
         public bool isOfficer { get; set; }
-        public TokenPayload tokenPayload { get; set; }
+        public LoginUser loginUser { get; set; }
     }
 }
