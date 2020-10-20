@@ -10,3 +10,8 @@
 /BlazorUserApp/bin/Debug/netstandard2.1/wwwroot/_framework/_bin
 /BlazorUserApp/bin/Debug/netstandard2.1
 /BlazorUserApp/obj
+/App/bin/Debug/netstandard2.1/wwwroot/_framework/_bin
+/App/bin/Debug/netstandard2.1
+/App/obj
+/RoutesApp/bin/Debug/netstandard2.1
+/RoutesApp/obj
