@@ -669,3 +669,11 @@ ul {
         margin: 0;
     }
 }
+
+.promotion-model a {
+    color: #0366d6 !important;
+}
+
+    .promotion-model a:hover {
+        color: #1E468B !important;
+    }

@@ -206,3 +206,4 @@ $('.pin-box').on("keydown", function (event) {
         event.preventDefault();
     }
 });
+

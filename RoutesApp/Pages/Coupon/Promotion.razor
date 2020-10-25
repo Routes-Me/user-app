@@ -1,10 +1,29 @@
 ﻿@page "/promotions"
-@inject NavigationManager navigationManager
-@using System.Net;
+@layout MainLayout
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ILocalStorageService storageService
+@inject IJSRuntime JSRuntime;
+@attribute [Authorize]
 
-@code { 
-    protected override void OnInitialized()
-    {
-        var returnUrl = WebUtility.UrlEncode(new Uri(navigationManager.Uri).PathAndQuery);
-        navigationManager.NavigateTo($"/?{returnUrl}");
-    } }
+    <div class="modal fade" id="popupModel" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Promotions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-title display-message"></p>
+                </div>
+                <div class="modal-footer promotion-model">
+                    <a href="/">Login</a>
+                    <a href="/coupon"> Available Coupons</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

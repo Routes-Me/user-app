@@ -36,59 +36,8 @@ namespace RoutesApp.Pages.Coupon
         {
             try
             {
-                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
-                {
-                    promotionId = _id;
-                }
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
-                token = userState.User.FindFirst("AccessToken").Value;
-                if (!string.IsNullOrEmpty(promotionId) && Convert.ToInt32(promotionId) > 0)
-                {
-                    Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
-                    {
-                        promotionId = promotionId,
-                        userId = userId
-                    };
-                    var serializedValue = JsonConvert.SerializeObject(coupon);
-                    var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/coupons", stringContent).ConfigureAwait(false);
-                    var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<Response>(responseData);
-                    if (response.status == true)
-                    {
-                        await GetCouponByUser(userId);
-                    }
-                    else
-                    {
-                        if (response.message.Contains("Coupons already redeemed"))
-                            await JSRuntime.InvokeVoidAsync("displayPopupModel", response.message);
-                        else
-                            message = response.message;
-
-                        messageType = AlertMessageType.Error;
-                        await GetCouponByUser(userId);
-                    }
-                }
-                else
-                {
-                    await GetCouponByUser(userId);
-                }
-            }
-            catch (Exception ex)
-            {
-                message = "Something went wrong!! Please try again. " + ex.Message;
-                messageType = AlertMessageType.Error;
-            }
-            spinner = "d-none";
-        }
-
-
-        public async Task GetCouponByUser(string userId)
-        {
-            try
-            {
                 var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -110,10 +59,13 @@ namespace RoutesApp.Pages.Coupon
                     message = response.message;
                     messageType = AlertMessageType.Error;
                 }
+                spinner = "d-none";
             }
             catch (Exception ex)
             {
-                throw ex;
+                message = "Something went wrong!! Please try again. " + ex.Message;
+                messageType = AlertMessageType.Error;
+                spinner = "d-none";
             }
         }
     }

@@ -92,7 +92,7 @@ namespace RoutesApp.Pages.Auth
                 }
                 else
                 {
-                    returnUrl = returnUrl.Replace("/?", "").Replace("promotions","coupon");
+                    returnUrl = returnUrl.Replace("/?", "");
                 }
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
@@ -169,14 +169,13 @@ namespace RoutesApp.Pages.Auth
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "")
+                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
                         {
-                            navigationManager.NavigateTo("/coupon");
+                            navigationManager.NavigateTo("/promotions");
                         }
                         else
                         {
-                            string url = returnUrl.Replace("/?", "");
-                            navigationManager.NavigateTo(url);
+                            navigationManager.NavigateTo(returnUrl);
                         }
                     }
                     else
