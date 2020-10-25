@@ -92,24 +92,28 @@ namespace RoutesApp.Pages.Auth
                 string Phone = string.Empty;
                 string EncryptedPassword = string.Empty;
                 string EmailAddress = string.Empty;
-                List<privilege> Roles = new List<privilege>();
-                privilege privilege = new privilege();
+                List<RolesModel> Roles = new List<RolesModel>();
+                RolesModel privilege = new RolesModel();
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
                 string KeyForAndroid = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
                 string IVForDashboard = "7w'}DkAkO!A&mLyL";
                 string KeyForDashboard = "Wf6cXM10cj_7B)V,";
-                privilege.Application = "userapp";
-                privilege.Privilege = "user";
+                privilege.ApplicationId = "445123223";
+                privilege.PrivilegeId = "1012576698";
                 Roles.Add(privilege);
 
                 if (isEmail)
                 {
                     EmailAddress = model.UserName;
                     if (encryption.IndexOfBSign(model.Password) != -1)
+                    {
                         EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
+                    }
                     else
+                    {
                         EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForAndroid, KeyForAndroid);
+                    }
                 }
                 else if (isPhone)
                 {
@@ -132,25 +136,19 @@ namespace RoutesApp.Pages.Auth
                 var response = JsonConvert.DeserializeObject<QRUsersResponse>(responseData);
                 if (response.status == true)
                 {
-                    spinner = "d-none";
                     navigationManager.NavigateTo("/");
                 }
                 else
                 {
                     message = response.message;
                     messageType = AlertMessageType.Error;
-                    spinner = "d-none";
                 }
-                spinner = "d-none";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                message = "Something went wrong!! Please try again.";
-                messageType = AlertMessageType.Error;
-                spinner = "d-none";
+               throw ex;
             }
         }
-
 
         public async Task RegisterUser()
         {
@@ -180,16 +178,17 @@ namespace RoutesApp.Pages.Auth
                     {
                         message = response.message;
                         messageType = AlertMessageType.Error;
-                        spinner = "d-none";
                     }
                 }
                 spinner = "d-none";
+                await Task.Delay(1);
             }
             catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
                 spinner = "d-none";
+                await Task.Delay(1);
             }
         }
     }

@@ -120,10 +120,10 @@ namespace RoutesApp.Models
         public User Users { get; set; }
     }
 
-    public class privilege
+    public class RolesModel
     {
-        public string Application { get; set; }
-        public string Privilege { get; set; }
+        public string ApplicationId { get; set; }
+        public string PrivilegeId { get; set; }
     }
 
     public class OfficersResponse : Response

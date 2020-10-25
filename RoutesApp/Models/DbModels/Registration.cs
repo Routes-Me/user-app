@@ -28,7 +28,7 @@ namespace RoutesApp.Models.DbModels
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Password { get; set; }
-        public List<privilege> Roles { get; set; }
+        public List<RolesModel> Roles { get; set; }
     }
 
     public class EmailModel
