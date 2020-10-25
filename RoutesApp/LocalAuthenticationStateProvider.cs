@@ -28,13 +28,13 @@ namespace RoutesApp
                 var claims = new[]
                 {
                     new Claim("AccessToken", userInfo.Token),
-                    new Claim("Name", userInfo.loginUser.Name),
-                    new Claim("Email", userInfo.loginUser.Email),
-                    new Claim("Phone", userInfo.loginUser.PhoneNumber),
-                    new Claim("UserId", userInfo.loginUser.UserId),
-                    new Claim("isOfficer", userInfo.loginUser.isOfficer.ToString()),
-                    new Claim("OfficerId", userInfo.loginUser.OfficerId.ToString()),
-                      new Claim("InstitutionId", userInfo.loginUser.InstitutionId.ToString()),
+                    new Claim("Name", userInfo.tokenPayload.Name),
+                    new Claim("Email", userInfo.tokenPayload.Email),
+                    new Claim("Phone", userInfo.tokenPayload.PhoneNumber),
+                    new Claim("UserId", userInfo.tokenPayload.UserId),
+                    new Claim("isOfficer", userInfo.isOfficer.ToString()),
+                    new Claim("OfficerId", userInfo.OfficerId.ToString()),
+                      new Claim("InstitutionId", userInfo.tokenPayload.InstitutionId.ToString()),
                 };
 
                 var identity = new ClaimsIdentity(claims, "BearerToken");

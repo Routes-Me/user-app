@@ -15,13 +15,20 @@ namespace RoutesApp.Models
         public int statusCode { get; set; }
     }
 
+
+    public class SignInResponse : Response
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string token { get; set; }
+    }
+
     public class QRUsersResponse : Response
     {
         public int userId { get; set; }
         public string email { get; set; }
     }
 
-    public class QrSignInResponse : Response
+    public class SignInResponsez : Response
     {
         public LoginUser user { get; set; }
         public string Token { get; set; }

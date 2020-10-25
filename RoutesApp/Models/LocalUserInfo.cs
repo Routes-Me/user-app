@@ -11,6 +11,6 @@ namespace RoutesApp.Models
         public string Token { get; set; }
         public string OfficerId { get; set; }
         public bool isOfficer { get; set; }
-        public LoginUser loginUser { get; set; }
+        public TokenPayload tokenPayload { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace RoutesApp.Pages.Auth
 {
@@ -19,6 +20,8 @@ namespace RoutesApp.Pages.Auth
         bool isPhone = false, isEmail = true;
         string otpSentSuccess = "d-none", otpSentProgress = "d-none", spinner = "d-none", message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
+        bool officer = false;
+        string OfficerId = string.Empty;
 
         public async Task CheckEmailOrPhone()
         {
@@ -86,7 +89,7 @@ namespace RoutesApp.Pages.Auth
                 spinner = "";
                 await Task.Delay(1);
                 string returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
-                if(returnUrl == "/")
+                if (returnUrl == "/")
                 {
                     returnUrl = string.Empty;
                 }
@@ -119,21 +122,24 @@ namespace RoutesApp.Pages.Auth
 
                     var serializedValue = JsonConvert.SerializeObject(loginUser);
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/qr/signin", stringContent).ConfigureAwait(false);
+                    var result = await Http.PostAsync("/api/signin", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<QrSignInResponse>(responseData);
+                    var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
-
+                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
+                        var jwtPayload = parseJwt(response.token);
+                        await GetOfficerAsync(jwtPayload);
                         var userInfo = new LocalUserInfo()
                         {
-                            Token = response.Token,
-                            loginUser = response.user
+                            Token = response.token,
+                            OfficerId = OfficerId,
+                            isOfficer = officer,
+                            tokenPayload = jwtPayload
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.Token}");
-                        if (string.IsNullOrEmpty(returnUrl) || returnUrl== null || returnUrl == "" || returnUrl.Trim().Length == 0)
+                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
                         {
                             navigationManager.NavigateTo("/coupon");
                         }
@@ -157,15 +163,20 @@ namespace RoutesApp.Pages.Auth
                     };
                     var serializedValue = JsonConvert.SerializeObject(otpUser);
                     var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/qr/signin/otp/verify", stringContent).ConfigureAwait(false);
+                    var result = await Http.PostAsync("/api/signin/otp/verify", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<QrSignInResponse>(responseData);
+                    var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
+                        var jwtPayload = parseJwt(response.token);
+                        await GetOfficerAsync(jwtPayload);
                         var userInfo = new LocalUserInfo()
                         {
-                            Token = response.Token,
-                            loginUser = response.user
+                            Token = response.token,
+                            OfficerId = OfficerId,
+                            isOfficer = officer,
+                            tokenPayload = jwtPayload
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
@@ -187,13 +198,50 @@ namespace RoutesApp.Pages.Auth
                 spinner = "d-none";
                 await Task.Delay(1);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";
             await Task.Delay(1);
+        }
+
+        private async Task GetOfficerAsync(TokenPayload jwtPayload)
+        {
+            foreach (var item in jwtPayload.Roles)
+            {
+                if (item.Privilege.ToLower() == "employee")
+                {
+                    officer = true;
+                }
+            }
+
+            if (officer == true)
+            {
+                var officerResult = await Http.GetAsync("/api/officers?userId=" + jwtPayload.UserId + "");
+                var officerResponseData = await officerResult.Content.ReadAsStringAsync();
+                var officerResponse = JsonConvert.DeserializeObject<OfficersResponse>(officerResponseData);
+                if (officerResponse.status == true)
+                {
+                    if (officerResponse.data.Count > 0)
+                    {
+                        foreach (var itemData in officerResponse.data)
+                        {
+                            OfficerId = itemData.OfficerId;
+                        }
+                    }
+                }
+            }
+        }
+
+        public TokenPayload parseJwt(string token)
+        {
+            string[] jwtEncodedSegments = token.Split('.');
+            var payloadSegment = jwtEncodedSegments[1];
+            var decodePayload = Convert.FromBase64String(payloadSegment);
+            string decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+            return JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
         }
     }
 }

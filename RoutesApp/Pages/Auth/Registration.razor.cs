@@ -150,6 +150,7 @@ namespace RoutesApp.Pages.Auth
             }
         }
 
+
         public async Task RegisterUser()
         {
             try
@@ -180,8 +181,6 @@ namespace RoutesApp.Pages.Auth
                         messageType = AlertMessageType.Error;
                     }
                 }
-                spinner = "d-none";
-                await Task.Delay(1);
             }
             catch (Exception)
             {
