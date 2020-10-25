@@ -92,7 +92,7 @@ namespace RoutesApp.Pages.Auth
                 }
                 else
                 {
-                    returnUrl = returnUrl.Replace("/?", "");
+                    returnUrl = returnUrl.Replace("/?", "").Replace("promotions","coupon");
                 }
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
