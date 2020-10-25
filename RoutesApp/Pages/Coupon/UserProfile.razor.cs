@@ -15,7 +15,7 @@ namespace RoutesApp.Pages.Coupon
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             try
             {
