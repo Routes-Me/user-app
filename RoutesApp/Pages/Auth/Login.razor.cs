@@ -128,7 +128,7 @@ namespace RoutesApp.Pages.Auth
                     if (response.status == true)
                     {
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
-                        var jwtPayload = parseJwt(response.token);
+                        var jwtPayload = await parseJwtAsync(response.token);
                         await GetOfficerAsync(jwtPayload);
                         var userInfo = new LocalUserInfo()
                         {
@@ -169,7 +169,7 @@ namespace RoutesApp.Pages.Auth
                     if (response.status == true)
                     {
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
-                        var jwtPayload = parseJwt(response.token);
+                        var jwtPayload = await parseJwtAsync(response.token);
                         await GetOfficerAsync(jwtPayload);
                         var userInfo = new LocalUserInfo()
                         {
@@ -235,13 +235,12 @@ namespace RoutesApp.Pages.Auth
             }
         }
 
-        public TokenPayload parseJwt(string token)
+        public async Task<TokenPayload> parseJwtAsync(string token)
         {
-            string[] jwtEncodedSegments = token.Split('.');
-            var payloadSegment = jwtEncodedSegments[1];
-            var decodePayload = Convert.FromBase64String(payloadSegment);
-            string decodedUtf8Payload = Encoding.UTF8.GetString(decodePayload).Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
-            return JsonConvert.DeserializeObject<TokenPayload>(decodedUtf8Payload);
+            string decodePayload = await JSRuntime.InvokeAsync<string>("ParseJWT", token);
+            decodePayload = decodePayload.Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
+            var test =  JsonConvert.DeserializeObject<TokenPayload>(decodePayload);
+            return test;
         }
     }
 }
