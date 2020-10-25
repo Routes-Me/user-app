@@ -83,6 +83,17 @@ namespace RoutesApp.Pages.Auth
         {
             try
             {
+                spinner = "";
+                await Task.Delay(1);
+                string returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
+                if(returnUrl == "/")
+                {
+                    returnUrl = string.Empty;
+                }
+                else
+                {
+                    returnUrl = returnUrl.Replace("/?", "").Replace("promotions","coupon");
+                }
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
                 string KeyForAndroid = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
@@ -92,9 +103,13 @@ namespace RoutesApp.Pages.Auth
                 if (isEmail)
                 {
                     if (encryption.IndexOfBSign(model.Password) != -1)
+                    {
                         EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
+                    }
                     else
+                    {
                         EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForAndroid, KeyForAndroid);
+                    }
 
                     SignInModel loginUser = new SignInModel()
                     {
@@ -118,27 +133,20 @@ namespace RoutesApp.Pages.Auth
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.Token}");
-                        var returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
-                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl != null)
-                        {
-                            string url = returnUrl.Replace("/?", "");
-                            navigationManager.NavigateTo(url);
-                        }
-                        else
+                        if (string.IsNullOrEmpty(returnUrl) || returnUrl== null || returnUrl == "" || returnUrl.Trim().Length == 0)
                         {
                             navigationManager.NavigateTo("/coupon");
                         }
-
-                        //navigationManager.NavigateTo("/coupon");
-                        spinner = "d-none";
+                        else
+                        {
+                            navigationManager.NavigateTo(returnUrl);
+                        }
                     }
                     else
                     {
                         message = response.message;
                         messageType = AlertMessageType.Error;
-                        spinner = "d-none";
                     }
-                    spinner = "d-none";
                 }
                 else if (isPhone)
                 {
@@ -161,19 +169,15 @@ namespace RoutesApp.Pages.Auth
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        var returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
-                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl != null)
+                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "")
+                        {
+                            navigationManager.NavigateTo("/coupon");
+                        }
+                        else
                         {
                             string url = returnUrl.Replace("/?", "");
                             navigationManager.NavigateTo(url);
                         }
-                        else
-                        {
-                            navigationManager.NavigateTo("/coupon");
-                        }
-
-                        //navigationManager.NavigateTo("/coupon");
-                        spinner = "d-none";
                     }
                     else
                     {
@@ -182,15 +186,15 @@ namespace RoutesApp.Pages.Auth
                     }
                 }
                 spinner = "d-none";
+                await Task.Delay(1);
             }
             catch (Exception)
             {
-                spinner = "d-none";
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
-
             }
             spinner = "d-none";
+            await Task.Delay(1);
         }
     }
 }
