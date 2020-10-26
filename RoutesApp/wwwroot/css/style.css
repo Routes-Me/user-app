@@ -317,7 +317,7 @@ ul {
     max-width: 365px;
     position: relative;
     cursor: pointer;
-    margin: 0 auto;
+    /*margin: 0 auto;*/
 }
 
 .coupon-area .coupon-detail-card {
@@ -372,11 +372,12 @@ ul {
 .see-all-link {
     display: block;
     padding: 10px;
-    color: #18428f;
+    color: #18428f !important;
+    font-weight: 500;
 }
 
     .see-all-link:hover {
-        color: black;
+        color: black !important;
     }
 
 .coupon-detail .single-card {
@@ -677,3 +678,7 @@ ul {
     .promotion-model a:hover {
         color: #1E468B !important;
     }
+
+.modal-backdrop {
+    display: none;
+}

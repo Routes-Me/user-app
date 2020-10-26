@@ -34,6 +34,14 @@ namespace RoutesApp.Pages.Redeem
                 }
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
+                string Token = userState.User.FindFirst("Token").Value;
+
+                if (string.IsNullOrEmpty(Http.DefaultRequestHeaders.Authorization.ToString()))
+                {
+                    if (!string.IsNullOrEmpty(Token))
+                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                }
+
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -45,7 +53,7 @@ namespace RoutesApp.Pages.Redeem
                         {
                             CouponDetailData couponModel = new CouponDetailData();
                             couponModel.Id = item.couponId;
-                            couponModel.Promotion = response.included.promotions.Where(x => x.PromotionId ==item.promotionId).FirstOrDefault();
+                            couponModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
                             couponModel.User = response.included.users.Where(x => x.UserId == item.userId).FirstOrDefault();
                             couponListModel.Add(couponModel);
                         }
@@ -91,7 +99,7 @@ namespace RoutesApp.Pages.Redeem
                     CouponId = couponId,
                     OfficerId = OfficerId,
                     InstitutionId = InstitutionId,
-                    Pin = model.Pin 
+                    Pin = model.Pin
                 };
                 var serializedValue = JsonConvert.SerializeObject(redemption);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");

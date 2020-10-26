@@ -127,6 +127,7 @@ namespace RoutesApp.Pages.Auth
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        Http.DefaultRequestHeaders.Clear();
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
                         var jwtPayload = await parseJwtAsync(response.token);
                         await GetOfficerAsync(jwtPayload);
@@ -139,19 +140,38 @@ namespace RoutesApp.Pages.Auth
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
+                        if (officer == true)
                         {
-                            navigationManager.NavigateTo("/coupon");
+                            if (!string.IsNullOrEmpty(OfficerId))
+                            {
+                                navigationManager.NavigateTo("/history?id=" + OfficerId + "");
+                            }
+                            else
+                            {
+                                message = "Officer not found.";
+                                messageType = AlertMessageType.Error;
+                            }
                         }
                         else
                         {
-                            navigationManager.NavigateTo(returnUrl);
+                            if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
+                            {
+                                navigationManager.NavigateTo("/coupon");
+                            }
+                            else
+                            {
+                                navigationManager.NavigateTo(returnUrl);
+                            }
                         }
                     }
                     else
                     {
-                        message = response.message;
-                        messageType = AlertMessageType.Error;
+                        var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseData);
+                        foreach (var item in errorResponse.errors)
+                        {
+                            message = item.detail;
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                 }
                 else if (isPhone)
@@ -168,6 +188,7 @@ namespace RoutesApp.Pages.Auth
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        Http.DefaultRequestHeaders.Clear();
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
                         var jwtPayload = await parseJwtAsync(response.token);
                         await GetOfficerAsync(jwtPayload);
@@ -180,13 +201,28 @@ namespace RoutesApp.Pages.Auth
                         };
                         await storageService.SetItemAsync("User", userInfo);
                         await authenticationStateProvider.GetAuthenticationStateAsync();
-                        if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
+                        if (officer == true)
                         {
-                            navigationManager.NavigateTo("/promotions");
+                            if (!string.IsNullOrEmpty(OfficerId))
+                            {
+                                navigationManager.NavigateTo("/history?id=" + OfficerId + "");
+                            }
+                            else
+                            {
+                                message = "Officer not found.";
+                                messageType = AlertMessageType.Error;
+                            }
                         }
                         else
                         {
-                            navigationManager.NavigateTo(returnUrl);
+                            if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
+                            {
+                                navigationManager.NavigateTo("/coupon");
+                            }
+                            else
+                            {
+                                navigationManager.NavigateTo(returnUrl);
+                            }
                         }
                     }
                     else
@@ -196,15 +232,13 @@ namespace RoutesApp.Pages.Auth
                     }
                 }
                 spinner = "d-none";
-                await Task.Delay(1);
             }
             catch (Exception ex)
             {
-                message = "Something went wrong!! Please try again.";
+                message = "Something went wrong!! Please try again. " + ex.Message;
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";
-            await Task.Delay(1);
         }
 
         private async Task GetOfficerAsync(TokenPayload jwtPayload)
@@ -239,8 +273,7 @@ namespace RoutesApp.Pages.Auth
         {
             string decodePayload = await JSRuntime.InvokeAsync<string>("ParseJWT", token);
             decodePayload = decodePayload.Replace(@"\", "").Replace("\"[", "[").Replace("]\"", "]");
-            var test =  JsonConvert.DeserializeObject<TokenPayload>(decodePayload);
-            return test;
+            return JsonConvert.DeserializeObject<TokenPayload>(decodePayload);
         }
     }
 }

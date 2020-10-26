@@ -1,0 +1,87 @@
+﻿@page "/promotion-details"
+@layout MainLayout
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject ILocalStorageService storageService
+@inject IJSRuntime JSRuntime;
+@*@attribute [Authorize]*@
+
+<style>
+    body {
+        background-color: #fff !important;
+    }
+
+    .promotion-details-header {
+        margin-top: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+        .promotion-details-header .heading-text {
+            text-align: center;
+        }
+
+        .promotion-details-header .party-icon-section {
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+            .promotion-details-header .party-icon-section img {
+                height: auto;
+                width: 25px;
+            }
+
+        .promotion-details-header .coupon-home {
+            margin: auto;
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+            .promotion-details-header .coupon-home button {
+                padding: 8px 80px;
+                border-radius: 10px;
+                background-color: #17ab13;
+                color: white;
+                border-color: transparent;
+                cursor: pointer;
+            }
+</style>
+<div class="custom-container">
+    @if (model != null)
+    {
+        <div class="promotion-details-header">
+            <div class="heading-text">You have been added the copoun succssfully. </div>
+            <div class="party-icon-section"><img src="images/party-popper.png" alt="" /></div>
+            <div class="coupon-home">
+                <button @onclick="@RedirectToCoupons">GO HOME</button>
+            </div>
+        </div>
+    }
+    <AlertMessage Message="@message" MessageType="@messageType" />
+    <div class="coupon-area coupon-detail">
+        <div class="row">
+            <div class="col-12">
+                <div class="single-card coupon-detail-card">
+                    @foreach (var item in model)
+                    {
+                        <div class="top-part text-left">
+                            <div class="barcode-holder"><img src="@item.QrCodeImage" class="w-100" alt="" /></div>
+                        </div>
+                        <div class="bottom text-left ">
+                            <p><img src="@item.promotion.LogoUrl" width="25" height="25" alt="" /> </p>
+                            <p> <b>@item.promotion.Title </b></p>
+                            <p>@item.promotion.Subtitle</p>
+                            @if (item.promotion.EndAt != null)
+                            {
+                                <p><span class="badge badge-light ">Valid till @(item.promotion.EndAt)</span></p>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

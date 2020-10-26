@@ -6,7 +6,13 @@
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
 
-    <div class="modal fade" id="popupModel" tabindex="-1" role="dialog">
+
+    <div class="coupon-loading @couponLoader">
+        We are adding a coupon for you
+        <div>please wait</div>
+        <div class="icon-hold"><img src="images/icon-progress-dots.png" width="14" height="4" alt="" /></div>
+    </div>
+    <div class="modal" id="popupModel" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -19,11 +25,12 @@
                     <p class="modal-title display-message"></p>
                 </div>
                 <div class="modal-footer promotion-model">
-                    <a href="/">Login</a>
-                    <a href="/coupon"> Available Coupons</a>
+                    <a href="javascript:void(0)" @onclick="@RedirectToLogin">Login</a>
+                    <a href="javascript:void(0)" @onclick="@RedirectToCoupon"> Available Coupons</a>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

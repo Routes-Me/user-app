@@ -11,13 +11,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoutesApp.Pages.Coupon
+namespace RoutesApp.Pages.Promotions
 {
-    public partial class Promotion
+    public partial class PromotionsData
     {
+
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
-        string spinner = "", message = string.Empty;
+        string spinner = "", message = string.Empty, couponLoader = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty;
 
@@ -47,7 +48,7 @@ namespace RoutesApp.Pages.Coupon
                     var response = JsonConvert.DeserializeObject<Response>(responseData);
                     if (response.status == true)
                     {
-                        NavManager.NavigateTo("/coupon");
+                        NavManager.NavigateTo("/promotion-details?id=" + promotionId + "");
                     }
                     else
                     {
@@ -59,6 +60,7 @@ namespace RoutesApp.Pages.Coupon
                         {
                             message = response.message;
                         }
+                        couponLoader = "d-none";
                         messageType = AlertMessageType.Error;
                     }
                 }
@@ -68,13 +70,25 @@ namespace RoutesApp.Pages.Coupon
                     messageType = AlertMessageType.Error;
                 }
                 spinner = "d-none";
+                couponLoader = "d-none";
             }
             catch (Exception ex)
             {
                 message = "Something went wrong!! Please try again. " + ex.Message;
                 messageType = AlertMessageType.Error;
                 spinner = "d-none";
+                couponLoader = "d-none";
             }
+        }
+        public async Task RedirectToLogin()
+        {
+            await JSRuntime.InvokeVoidAsync("removeModelBackdrop");
+            NavManager.NavigateTo("/");
+        }
+        public async Task RedirectToCoupon()
+        {
+            await JSRuntime.InvokeVoidAsync("removeModelBackdrop");
+            NavManager.NavigateTo("/coupon");
         }
     }
 }

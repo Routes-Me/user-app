@@ -34,7 +34,7 @@ namespace RoutesApp.Models
         public string Token { get; set; }
     }
 
-    
+
 
     public class Pagination
     {
@@ -161,4 +161,32 @@ namespace RoutesApp.Models
         public string PhoneNumber { get; set; }
         public string CountryIso { get; set; }
     }
+
+    public class ErrorResponse
+    {
+        public List<ErrorDetails> errors { get; set; }
+    }
+
+    public class ErrorDetails
+    {
+        public int statusCode { get; set; }
+        public string detail { get; set; }
+        public int code { get; set; }
+    }
+
+    public class PromotionsGetResponse : Response
+    {
+        public Pagination pagination { get; set; }
+        public List<Promotion> data { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public JObject included { get; set; }
+    }
+
+
+    public class PromotionDetailsData
+    {
+        public Promotion promotion { get; set; }
+        public string QrCodeImage { get; set; }
+    }
+
 }

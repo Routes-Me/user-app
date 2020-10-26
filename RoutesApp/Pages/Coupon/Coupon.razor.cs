@@ -27,7 +27,7 @@ namespace RoutesApp.Pages.Coupon
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         int counter = 0, totalCount = 0;
-        string spinner = "", message = string.Empty;
+        string spinner = "", message = string.Empty, Name = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
         string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty, token = string.Empty;
@@ -38,6 +38,16 @@ namespace RoutesApp.Pages.Coupon
             {
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
+                string UserName = userState.User.FindFirst("Name").Value;
+                string[] arrUserName = UserName.Split(' ');
+                if (arrUserName.Length > 1)
+                {
+                    Name = arrUserName[0].Substring(0, 1) + arrUserName[1].Substring(0, 1);
+                }
+                else
+                {
+                    Name = UserName.Substring(0, 2);
+                }
                 var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);

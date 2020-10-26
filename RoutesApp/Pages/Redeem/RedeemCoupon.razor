@@ -99,14 +99,14 @@
                 </div>
                 <div class="info-item row border-top-0">
                     <div class="col-12">
-                        @*@if (item.Promotion.ExpieryDate > DateTime.UtcNow)
-                            {*@
-                        <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled"> Redeem </button>
-                        @*}
-                            else
-                            {
-                                <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled expired-offer"> Redeem </button>
-                            }*@
+                        @if (item.Promotion.EndAt > DateTime.UtcNow)
+                        {
+                            <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled"> Redeem </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-blue btn-block text-uppercase btn-redeem disabled expired-offer"> Redeem </button>
+                        }
                     </div>
                 </div>
             }

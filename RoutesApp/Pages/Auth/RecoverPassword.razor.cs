@@ -18,7 +18,7 @@ namespace RoutesApp.Pages.Auth
             try
             {
                 spinner ="";
-                string Url = "api/account/password?email=" + model.Email;
+                string Url = "/api/account/password?email=" + model.Email;
                 var result = await Http.PostAsync(Url, null).ConfigureAwait(false);
                 var responseData = await result.Content.ReadAsStringAsync();
                 Response response = new Response();
@@ -34,7 +34,7 @@ namespace RoutesApp.Pages.Auth
                     messageType = AlertMessageType.Error;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;

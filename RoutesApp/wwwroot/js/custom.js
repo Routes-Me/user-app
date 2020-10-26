@@ -48,7 +48,7 @@ $(document).on('change', '.txt-username', function (event) {
     checkEmailOrPhone();
 });
 
-$(document).on('change', '.reset-email', function (event) {
+$(document).on('keyup', '.reset-email', function (event) {
     var email = $(this).val();
     if (email != '') {
         $('.reset-submit').removeClass('disabled');
@@ -217,4 +217,10 @@ function ParseJWT(token) {
     }).join(''));
 
     return jsonPayload;
+}
+
+function removeModelBackdrop() {
+    $('#popupModel').modal('hide');
+    $('body').removeClass('modal-open');
+    $('.modal-backdrop').remove();
 }
