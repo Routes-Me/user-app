@@ -6,5 +6,4 @@
     {
         var returnUrl = WebUtility.UrlEncode(new Uri(navigationManager.Uri).PathAndQuery);
         navigationManager.NavigateTo($"/?{returnUrl}");
-        //navigationManager.NavigateTo("/");
     } }

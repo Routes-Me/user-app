@@ -1,7 +1,8 @@
-﻿@page "/coupon"
+﻿@page "/coupons"
+@page "/coupons/{CouponId}"
 @layout MainLayout
 @inject HttpClient Http
-@inject NavigationManager NavManager
+@inject NavigationManager navigationManager
 @inject ILocalStorageService storageService
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
@@ -18,51 +19,55 @@
         <div class="profile-name"> <a href="/profile"> @Name </a></div>
     </div>
     <AlertMessage Message="@message" MessageType="@messageType" />
-    <div class="coupon-area">
-        <h5 class="text-uppercase"> Available </h5>
-        <div class=" masonry">
+    @if (model.Count > 0)
+    {
+        <div class="coupon-area">
+            <h5 class="text-uppercase"> Available </h5>
+            <div class=" masonry">
 
-            @foreach (var item in model)
-            {
-                <div class="single-card ">
-                    <a href="/coupon-details?id=@item.Id">
-                        <div class="text-left">
-                            <div class="barcode-holder"><img src="@item.QrCodeImage" class="w-100" alt="" /></div>
-                            <h4>@item.Promotion.Title</h4>
-                        </div>
-                        <div class="bottom text-right "> <img src="@item.Promotion.LogoUrl" width="25" height="25" alt="" /> </div>
-                    </a>
-                </div>
-            }
-            @if (totalCount > 4)
-            {
-                <div class="single-card">
-                    <div class="text-center"> <a href="/coupon-list" class="see-all-link"> +@(totalCount - model.Count) See All</a> </div>
-                </div>
-            }
+                @foreach (var item in model)
+                {
+                    <div class="single-card ">
+                        <a href="/coupon-details?id=@item.Id">
+                            <div class="text-left">
+                                <div class="barcode-holder"><img src="@item.QrCodeImage" class="w-100" alt="" /></div>
+                                <h4>@item.Promotion.Title</h4>
+                            </div>
+                            <div class="bottom text-right "> <img src="@item.Promotion.LogoUrl" width="25" height="25" alt="" /> </div>
+                        </a>
+                    </div>
+                }
+                @if (totalCount > 4)
+                {
+                    <div class="single-card">
+                        <div class="text-center"> <a href="/coupon-list" class="see-all-link"> +@(totalCount - model.Count) See All</a> </div>
+                    </div>
+                }
+            </div>
+            @*<h5 class="text-uppercase mt-5"> Redeemed </h5>
+                <div class=" masonry only-two-item-column">
+                    <div class="single-card">
+                        <a href="/coupon-details">
+                            <div class="text-left">
+                                <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
+                                <h4>30% discount for any meal</h4>
+                            </div>
+                            <div class="bottom text-right "> <img src="images/brand-logo.png" width="25" height="25" alt="" /> </div>
+                        </a>
+                    </div>
+                    <div class="single-card">
+                        <a href="/coupon-details">
+                            <div class="text-left">
+                                <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
+                                <h4>30% discount for any meal</h4>
+                            </div>
+                            <div class="bottom text-right "> <img src="images/brand-logo.png" width="25" height="25" alt="" /> </div>
+                        </a>
+                    </div>
+                </div>*@
         </div>
-        @*<h5 class="text-uppercase mt-5"> Redeemed </h5>
-            <div class=" masonry only-two-item-column">
-                <div class="single-card">
-                    <a href="/coupon-details">
-                        <div class="text-left">
-                            <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
-                            <h4>30% discount for any meal</h4>
-                        </div>
-                        <div class="bottom text-right "> <img src="images/brand-logo.png" width="25" height="25" alt="" /> </div>
-                    </a>
-                </div>
-                <div class="single-card">
-                    <a href="/coupon-details">
-                        <div class="text-left">
-                            <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
-                            <h4>30% discount for any meal</h4>
-                        </div>
-                        <div class="bottom text-right "> <img src="images/brand-logo.png" width="25" height="25" alt="" /> </div>
-                    </a>
-                </div>
-            </div>*@
-    </div>
+    }
+
 
 </div>
 <div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

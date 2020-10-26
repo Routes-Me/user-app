@@ -27,21 +27,13 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
-                var uri = navManager.ToAbsoluteUri(navManager.Uri);
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     couponId = _id;
                 }
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
-                string Token = userState.User.FindFirst("Token").Value;
-
-                if (string.IsNullOrEmpty(Http.DefaultRequestHeaders.Authorization.ToString()))
-                {
-                    if (!string.IsNullOrEmpty(Token))
-                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
-                }
-
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -108,7 +100,7 @@ namespace RoutesApp.Pages.Redeem
                 var response = JsonConvert.DeserializeObject<RedemptionResponse>(responseData);
                 if (response.status == true)
                 {
-                    navManager.NavigateTo("/success?id=" + response.RedemptionId + "");
+                    navigationManager.NavigateTo("/success?id=" + response.RedemptionId + "");
                 }
                 else
                 {

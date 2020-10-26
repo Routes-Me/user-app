@@ -48,12 +48,22 @@ namespace RoutesApp.Models
         public Pagination pagination { get; set; }
         public List<Promotion> data { get; set; }
     }
+    public class CouponGetResponse : Response
+    {
+        public Pagination pagination { get; set; }
+        public List<Coupon> data { get; set; }
+        public CouponIncluded included { get; set; }
+    }
 
     public class CouponResponse : Response
     {
         public Pagination pagination { get; set; }
         public List<Coupon> data { get; set; }
         public Included included { get; set; }
+    }
+    public class CouponIncluded
+    {
+        public List<Promotion> promotions { get; set; }
     }
     public class Included
     {

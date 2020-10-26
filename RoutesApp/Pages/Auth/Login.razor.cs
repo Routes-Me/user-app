@@ -156,7 +156,7 @@ namespace RoutesApp.Pages.Auth
                         {
                             if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
                             {
-                                navigationManager.NavigateTo("/coupon");
+                                navigationManager.NavigateTo("/coupons");
                             }
                             else
                             {
@@ -217,7 +217,7 @@ namespace RoutesApp.Pages.Auth
                         {
                             if (string.IsNullOrEmpty(returnUrl) || returnUrl == null || returnUrl == "" || returnUrl.Trim().Length == 0)
                             {
-                                navigationManager.NavigateTo("/coupon");
+                                navigationManager.NavigateTo("/coupons");
                             }
                             else
                             {

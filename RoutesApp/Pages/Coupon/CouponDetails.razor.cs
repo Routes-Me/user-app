@@ -22,7 +22,7 @@ namespace RoutesApp.Pages.Coupon
         {
             try
             {
-                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     couponId = _id;

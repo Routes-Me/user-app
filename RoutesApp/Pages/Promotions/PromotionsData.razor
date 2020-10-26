@@ -1,36 +1,37 @@
 ﻿@page "/promotions"
+@page "/promotions/{PromotionId}"
 @layout MainLayout
 @inject HttpClient Http
-@inject NavigationManager NavManager
+@inject NavigationManager navigationManager
 @inject ILocalStorageService storageService
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
 
 
-    <div class="coupon-loading @couponLoader">
-        We are adding a coupon for you
-        <div>please wait</div>
-        <div class="icon-hold"><img src="images/icon-progress-dots.png" width="14" height="4" alt="" /></div>
-    </div>
-    <div class="modal" id="popupModel" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Promotions</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="modal-title display-message"></p>
-                </div>
-                <div class="modal-footer promotion-model">
-                    <a href="javascript:void(0)" @onclick="@RedirectToLogin">Login</a>
-                    <a href="javascript:void(0)" @onclick="@RedirectToCoupon"> Available Coupons</a>
-                </div>
+<div class="coupon-loading @couponLoader">
+    We are adding a coupon for you
+    <div>please wait</div>
+    <div class="icon-hold"><img src="images/icon-progress-dots.png" width="14" height="4" alt="" /></div>
+</div>
+<div class="modal" id="popupModel" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Promotions</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-title display-message"></p>
+            </div>
+            <div class="modal-footer promotion-model">
+                <a href="javascript:void(0)" @onclick="@RedirectToLogin">Login</a>
+                <a href="javascript:void(0)" @onclick="@RedirectToCoupon"> Available Coupons</a>
             </div>
         </div>
     </div>
+</div>
 
 
-    <div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>
+<div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>

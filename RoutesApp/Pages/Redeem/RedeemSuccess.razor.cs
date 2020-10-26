@@ -19,7 +19,7 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
-                var uri = navManager.ToAbsoluteUri(navManager.Uri);
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     trasactionId = _id;
@@ -39,7 +39,7 @@ namespace RoutesApp.Pages.Redeem
             spinner = string.Empty;
             var userState = authenticationState.Result;
             officerId = userState.User.FindFirst("OfficerId").Value;
-            navManager.NavigateTo("/history?id=" + officerId + "");
+            navigationManager.NavigateTo("/history?id=" + officerId + "");
             spinner = "d-none";
         }
     }

@@ -10,7 +10,6 @@ namespace RoutesApp.Models.DbModels
         public string couponId { get; set; }
         public string promotionId { get; set; }
         public string userId { get; set; }
-        public string qrCodeUrl { get; set; }
         public DateTime? createdAt { get; set; }
     }
 

@@ -21,7 +21,7 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
-                var uri = navManager.ToAbsoluteUri(navManager.Uri);
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     officerId = _id;

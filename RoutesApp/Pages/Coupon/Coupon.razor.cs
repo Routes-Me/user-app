@@ -1,36 +1,25 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using RoutesApp.Models;
-using RoutesApp.Models.DbModels;
-using QRCoder;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using Microsoft.JSInterop;
-using System.Runtime.InteropServices;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace RoutesApp.Pages.Coupon
 {
     public partial class Coupon
     {
+        [Parameter]
+        public string CouponId { get; set; }
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         int counter = 0, totalCount = 0;
-        string spinner = "", message = string.Empty, Name = string.Empty;
+        string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
-        string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty, token = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
@@ -38,6 +27,7 @@ namespace RoutesApp.Pages.Coupon
             {
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
+                tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
                 string UserName = userState.User.FindFirst("Name").Value;
                 string[] arrUserName = UserName.Split(' ');
                 if (arrUserName.Length > 1)
@@ -48,26 +38,57 @@ namespace RoutesApp.Pages.Coupon
                 {
                     Name = UserName.Substring(0, 2);
                 }
-                var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
-                var responseData = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
-                if (response.status == true)
+
+                if (!string.IsNullOrEmpty(CouponId))
                 {
-                    totalCount = response.data.Count();
-                    foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
+                    var couponResult = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion");
+                    var couponResponseData = await couponResult.Content.ReadAsStringAsync();
+                    var couponResponse = JsonConvert.DeserializeObject<CouponGetResponse>(couponResponseData);
+                    if (couponResponse.status == true)
                     {
-                        CouponListData couponList = new CouponListData();
-                        couponList.Id = item.couponId;
-                        couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                        couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "https://userapp.routesme.com/coupons/" + item.couponId + "");
-                        couponList.Count = totalCount;
-                        model.Add(couponList);
+                        string promotionInstitutionId = couponResponse.included.promotions.Select(x => x.InstitutionId).FirstOrDefault();
+                        if (tokenInstitutionId == promotionInstitutionId)
+                        {
+                            navigationManager.NavigateTo("/redeem?id=" + CouponId + "");
+                        }
+                        else
+                        {
+                            message = "Opps!! You are not authorize to redeem coupon.";
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                 }
                 else
                 {
-                    message = response.message;
-                    messageType = AlertMessageType.Error;
+                    var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
+                    if (response.status == true)
+                    {
+                        totalCount = response.data.Count();
+                        if(totalCount > 0)
+                        {
+                            foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
+                            {
+                                CouponListData couponList = new CouponListData();
+                                couponList.Id = item.couponId;
+                                couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
+                                couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "https://userapp.routesme.com/coupons/" + item.couponId + "");
+                                couponList.Count = totalCount;
+                                model.Add(couponList);
+                            }
+                        }
+                        else
+                        {
+                            message = "No coupons available.";
+                            messageType = AlertMessageType.Error;
+                        }
+                    }
+                    else
+                    {
+                        message = response.message;
+                        messageType = AlertMessageType.Error;
+                    }
                 }
                 spinner = "d-none";
             }

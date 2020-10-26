@@ -24,7 +24,7 @@ namespace RoutesApp.Pages.Redeem
             {
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
-                var uri = navManager.ToAbsoluteUri(navManager.Uri);
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
                     redemptionId = _id;

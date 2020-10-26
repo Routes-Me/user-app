@@ -15,30 +15,27 @@ namespace RoutesApp.Pages.Promotions
 {
     public partial class PromotionsData
     {
+        [Parameter]
+        public string PromotionId { get; set; }
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         string spinner = "", message = string.Empty, couponLoader = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
-        string promotionId = string.Empty, couponId = string.Empty, userId = string.Empty;
+        string couponId = string.Empty, userId = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
                 spinner = "";
-                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
-                {
-                    promotionId = _id;
-                }
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
-                if (!string.IsNullOrEmpty(promotionId) && Convert.ToInt32(promotionId) > 0)
+                if (!string.IsNullOrEmpty(PromotionId) && Convert.ToInt32(PromotionId) > 0)
                 {
                     Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
                     {
-                        promotionId = promotionId,
+                        promotionId = PromotionId,
                         userId = userId
                     };
                     var serializedValue = JsonConvert.SerializeObject(coupon);
@@ -48,7 +45,7 @@ namespace RoutesApp.Pages.Promotions
                     var response = JsonConvert.DeserializeObject<Response>(responseData);
                     if (response.status == true)
                     {
-                        NavManager.NavigateTo("/promotion-details?id=" + promotionId + "");
+                        navigationManager.NavigateTo("/promotion-details?id=" + PromotionId + "");
                     }
                     else
                     {
@@ -83,12 +80,12 @@ namespace RoutesApp.Pages.Promotions
         public async Task RedirectToLogin()
         {
             await JSRuntime.InvokeVoidAsync("removeModelBackdrop");
-            NavManager.NavigateTo("/");
+            navigationManager.NavigateTo("/");
         }
         public async Task RedirectToCoupon()
         {
             await JSRuntime.InvokeVoidAsync("removeModelBackdrop");
-            NavManager.NavigateTo("/coupon");
+            navigationManager.NavigateTo("/coupons");
         }
     }
 }
