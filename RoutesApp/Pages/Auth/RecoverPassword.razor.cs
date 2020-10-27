@@ -8,12 +8,12 @@ namespace RoutesApp.Pages.Auth
 {
     public partial class RecoverPassword
     {
-        ResetPassword model = new ResetPassword();
+        ForgotPassword model = new ForgotPassword();
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         string spinner = "d-none";
 
-        public async Task ResetPassword()
+        public async Task RetrivePassword()
         {
             try
             {

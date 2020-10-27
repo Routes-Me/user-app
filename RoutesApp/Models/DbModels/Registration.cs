@@ -49,10 +49,27 @@ namespace RoutesApp.Models.DbModels
         public string Code { get; set; }
     }
 
-    public class ResetPassword
+    public class ForgotPassword
     {
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+    }
+
+    public class SetNewPassword
+    {
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; }
+    }
+    public class ChangePasswordModel
+    {
+        public string UserId { get; set; }
+        public string NewPassword { get; set; }
     }
 }

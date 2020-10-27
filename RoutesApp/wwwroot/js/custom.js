@@ -51,10 +51,10 @@ $(document).on('change', '.txt-username', function (event) {
 $(document).on('keyup', '.reset-email', function (event) {
     var email = $(this).val();
     if (email != '') {
-        $('.reset-submit').removeClass('disabled');
+        $('.forgot-password-submit').removeClass('disabled');
     }
     else {
-        $('.reset-submit').addClass('disabled');
+        $('.forgot-password-submit').addClass('disabled');
     }
 });
 
@@ -223,4 +223,24 @@ function removeModelBackdrop() {
     $('#popupModel').modal('hide');
     $('body').removeClass('modal-open');
     $('.modal-backdrop').remove();
+}
+
+$(document).on('keyup', '#resetpassword', function (event) {
+    enableSubmit();
+});
+
+$(document).on('keyup', '#resetpasswordconfirm', function (event) {
+    enableSubmit();
+});
+
+function enableSubmit() {
+    var password = $('#resetpassword').val();
+    var rePassword = $('#resetpasswordconfirm').val();
+
+    if (password != '' && rePassword != '') {
+        $('.reset-submit').removeClass('disabled');
+    }
+    else {
+        $('.reset-submit').addClass('disabled');
+    }
 }
