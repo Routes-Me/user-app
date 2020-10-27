@@ -142,6 +142,7 @@ namespace RoutesApp.Pages.Auth
                 {
                     message = response.message;
                     messageType = AlertMessageType.Error;
+                    spinner = "d-none";
                 }
             }
             catch (Exception ex)
@@ -187,7 +188,6 @@ namespace RoutesApp.Pages.Auth
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
                 spinner = "d-none";
-                await Task.Delay(1);
             }
         }
     }
