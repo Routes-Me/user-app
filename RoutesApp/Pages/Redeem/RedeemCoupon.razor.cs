@@ -16,7 +16,10 @@ namespace RoutesApp.Pages.Redeem
 {
     public partial class RedeemCoupon
     {
-        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, couponId = string.Empty, expiredCode = string.Empty, token = string.Empty;
+        [Parameter]
+        public string CouponId { get; set; }
+
+        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, expiredCode = string.Empty, token = string.Empty;
         List<CouponDetailData> couponListModel = new List<CouponDetailData>();
         Redemption model = new Redemption();
 
@@ -27,14 +30,9 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
-                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
-                {
-                    couponId = _id;
-                }
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
-                var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion,user");
+                var result = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
                 if (response.status == true)
@@ -88,7 +86,7 @@ namespace RoutesApp.Pages.Redeem
                 }
                 Redemption redemption = new Redemption()
                 {
-                    CouponId = couponId,
+                    CouponId = CouponId,
                     OfficerId = OfficerId,
                     InstitutionId = InstitutionId,
                     Pin = model.Pin

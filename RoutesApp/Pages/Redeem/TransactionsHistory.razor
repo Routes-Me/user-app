@@ -15,9 +15,12 @@
         <h2> History </h2>
         <div class="profile-name"> <a href="/profile"> @Name </a></div>
     </div>
-    <div class="search">
-        <input type="text" class="form-control" placeholder="Search ids, names …">
-    </div>
+    @if (model != null && model.Count > 0)
+    {
+        <div class="search">
+            <input type="text" class="form-control" placeholder="Search ids, names …">
+        </div>
+    }
     <ul class="theme-list">
         @foreach (var item in model)
         {

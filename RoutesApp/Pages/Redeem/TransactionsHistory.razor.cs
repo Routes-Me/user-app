@@ -43,7 +43,7 @@ namespace RoutesApp.Pages.Redeem
                 var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
                 if (response.status == true)
                 {
-                    if(response.data.Count > 0)
+                    if (response.data != null && response.data.Count > 0)
                     {
                         foreach (var item in response.data)
                         {
