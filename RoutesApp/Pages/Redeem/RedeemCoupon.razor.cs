@@ -33,10 +33,8 @@ namespace RoutesApp.Pages.Redeem
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
                 string Token = userState.User.FindFirst("AccessToken").Value;
-
                 Http.DefaultRequestHeaders.Clear();
                 Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
-
                 var result = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
@@ -96,6 +94,9 @@ namespace RoutesApp.Pages.Redeem
                     InstitutionId = InstitutionId,
                     Pin = model.Pin
                 };
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 var serializedValue = JsonConvert.SerializeObject(redemption);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                 var result = await Http.PostAsync("/api/coupons/redeem", stringContent).ConfigureAwait(false);
