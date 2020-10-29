@@ -32,10 +32,15 @@ namespace RoutesApp.Pages.Redeem
             {
                 var userState = authenticationState.Result;
                 UserName = userState.User.FindFirst("Name").Value;
+                string Token = userState.User.FindFirst("AccessToken").Value;
+
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+
                 var result = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
-                if (response.status == true)
+                if (response != null && response.status == true)
                 {
                     if (response.data.Count > 0)
                     {

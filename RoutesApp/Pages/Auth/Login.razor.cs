@@ -87,6 +87,7 @@ namespace RoutesApp.Pages.Auth
             try
             {
                 spinner = "";
+                bool IsRedeem = false;
                 await Task.Delay(1);
                 string returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
                 if (returnUrl == "/")
@@ -96,6 +97,15 @@ namespace RoutesApp.Pages.Auth
                 else
                 {
                     returnUrl = returnUrl.Replace("/?", "");
+                }
+
+                string[] arrReturnUrl = returnUrl.Split('/');
+                if (arrReturnUrl.Length > 0)
+                {
+                    if (arrReturnUrl[1].ToLower() == "redeem")
+                    {
+                        IsRedeem = true;
+                    }
                 }
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
@@ -144,7 +154,15 @@ namespace RoutesApp.Pages.Auth
                         {
                             if (!string.IsNullOrEmpty(OfficerId))
                             {
-                                navigationManager.NavigateTo("/history?id=" + OfficerId + "");
+                                if (IsRedeem == true)
+                                {
+                                    navigationManager.NavigateTo(returnUrl);
+                                }
+                                else
+                                {
+                                    navigationManager.NavigateTo("/history?id=" + OfficerId + "");
+                                }
+
                             }
                             else
                             {

@@ -18,13 +18,13 @@
     </div>
     <div class="form-filed">
         <div class="d-flex justify-content-between align-items-center">
-            <h6>Promotions</h6> <p>@(model.Count) Items</p>
+            <h6>Promotions</h6> <h6>@(model.Count) Items</h6>
         </div>
         <ul class="theme-list bg-white">
             @foreach (var item in model)
             {
                 <li>
-                    @*<a href="javascript:void(0);" class="link"></a>*@
+                    <a href="/coupon-details?id=@item.Id" class="link"></a>
                     <div class="left-side"> <img src="@item.Promotion.LogoUrl" width="25" height="25" class="border-radius-5" alt=""> </div>
                     <div class="right-side">
                         <div class="row">
