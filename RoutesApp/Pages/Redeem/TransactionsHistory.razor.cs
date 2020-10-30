@@ -22,7 +22,7 @@ namespace RoutesApp.Pages.Redeem
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
-        bool IsSearch = false;
+        bool IsSearch = false, IsAccess = true;
         protected override async Task OnInitializedAsync()
         {
             try
@@ -34,22 +34,59 @@ namespace RoutesApp.Pages.Redeem
                 }
                 var userState = authenticationState.Result;
                 string isOfficer = userState.User.FindFirst("isOfficer").Value;
-                if (isOfficer == "true")
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+
+                if (isOfficer == "True")
                 {
-                    string tokenOfficerId = userState.User.FindFirst("OfficerId").Value;
-                    if (tokenOfficerId != officerId)
+                    string tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
+                    if (!string.IsNullOrEmpty(officerId))
                     {
-                        message = "You don't have permission to access this page.";
-                        messageType = AlertMessageType.Error;
+                        var officerResult = await Http.GetAsync("/api/officers/" + officerId + "");
+                        var officerResponseData = await officerResult.Content.ReadAsStringAsync();
+                        var officerResponse = JsonConvert.DeserializeObject<OfficersResponse>(officerResponseData);
+                        if (officerResponse.status == true)
+                        {
+                            string officerInstitutionId = string.Empty;
+                            foreach (var item in officerResponse.data)
+                            {
+                                officerInstitutionId = item.InstitutionId;
+                            }
+                            if (tokenInstitutionId != officerInstitutionId)
+                            {
+                                IsAccess = false;
+                                message = "You don't have permission to access this page.";
+                                messageType = AlertMessageType.Error;
+                            }
+                        }
+                        else
+                        {
+                            if (officerResponse.message.Contains("Authentication failed."))
+                            {
+                                navigationManager.NavigateTo("/");
+                            }
+                            else
+                            {
+                                IsAccess = false;
+                                message = officerResponse.message;
+                                messageType = AlertMessageType.Error;
+                            }
+                        }
                     }
                 }
                 else
                 {
+                    IsAccess = false;
                     message = "You don't have permission to access this page.";
                     messageType = AlertMessageType.Error;
                 }
-                string searchTerm = string.Empty;
-                await GetRedeemHistory(searchTerm);
+
+                if (IsAccess == true)
+                {
+                    string searchTerm = string.Empty;
+                    await GetRedeemHistory(searchTerm);
+                }
                 spinner = "d-none";
             }
             catch (Exception)
@@ -87,9 +124,6 @@ namespace RoutesApp.Pages.Redeem
                 }
                 var userState = authenticationState.Result;
                 string UserName = userState.User.FindFirst("Name").Value;
-                string Token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Clear();
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 string[] arrUserName = UserName.Split(' ');
                 if (arrUserName.Length > 1)
                 {

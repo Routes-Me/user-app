@@ -19,9 +19,10 @@ namespace RoutesApp.Pages.Redeem
         [Parameter]
         public string CouponId { get; set; }
 
-        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, expiredCode = string.Empty, token = string.Empty, officerId = string.Empty;
+        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, expiredCode = string.Empty, token = string.Empty;
         List<CouponDetailData> couponListModel = new List<CouponDetailData>();
         Redemption model = new Redemption();
+        bool IsAccess = true;
 
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
@@ -30,64 +31,89 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
+                spinner = string.Empty;
                 var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("OfficerId", out var _id))
-                {
-                    officerId = _id;
-                }
                 var userState = authenticationState.Result;
                 string isOfficer = userState.User.FindFirst("isOfficer").Value;
-                if (isOfficer == "true")
-                {
-                    string tokenOfficerId = userState.User.FindFirst("OfficerId").Value;
-                    if (tokenOfficerId != officerId)
-                    {
-                        message = "You don't have permission to access this page.";
-                        messageType = AlertMessageType.Error;
-                    }
-                }
-                else
-                {
-                    message = "You don't have permission to access this page.";
-                    messageType = AlertMessageType.Error;
-                }
-
                 UserName = userState.User.FindFirst("Name").Value;
                 string Token = userState.User.FindFirst("AccessToken").Value;
                 Http.DefaultRequestHeaders.Clear();
                 Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
-                var result = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion,user");
-                var responseData = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
-                if (response != null && response.status == true)
+                if (isOfficer == "True")
                 {
-                    if (response.data.Count > 0)
+                    string tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
+                    if (!string.IsNullOrEmpty(CouponId))
                     {
-                        foreach (var item in response.data)
+                        var couponResult = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion");
+                        var couponResponseData = await couponResult.Content.ReadAsStringAsync();
+                        var couponResponse = JsonConvert.DeserializeObject<CouponGetResponse>(couponResponseData);
+                        if (couponResponse.status == true)
                         {
-                            CouponDetailData couponModel = new CouponDetailData();
-                            couponModel.Id = item.couponId;
-                            couponModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                            couponModel.User = response.included.users.Where(x => x.UserId == item.userId).FirstOrDefault();
-                            couponListModel.Add(couponModel);
+                            string promotionInstitutionId = couponResponse.included.promotions.Select(x => x.InstitutionId).FirstOrDefault();
+                            if (tokenInstitutionId != promotionInstitutionId)
+                            {
+                                IsAccess = false;
+                                message = "You don't have permission to access this page.";
+                                messageType = AlertMessageType.Error;
+                            }
                         }
-                    }
-                    else
-                    {
-                        message = "No coupon found for redemption. Please try again.";
-                        messageType = AlertMessageType.Error;
+                        else
+                        {
+                            if (couponResponse.message.Contains("Authentication failed."))
+                            {
+                                navigationManager.NavigateTo("/");
+                            }
+                            else
+                            {
+                                IsAccess = false;
+                                message = couponResponse.message;
+                                messageType = AlertMessageType.Error;
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    if (response.message.Contains("Authentication failed."))
+                    IsAccess = false;
+                    message = "You don't have permission to access this page.";
+                    messageType = AlertMessageType.Error;
+                }
+
+                if (IsAccess == true)
+                {
+                    var result = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion,user");
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
+                    if (response != null && response.status == true)
                     {
-                        navigationManager.NavigateTo("/");
+                        if (response.data.Count > 0)
+                        {
+                            foreach (var item in response.data)
+                            {
+                                CouponDetailData couponModel = new CouponDetailData();
+                                couponModel.Id = item.couponId;
+                                couponModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
+                                couponModel.User = response.included.users.Where(x => x.UserId == item.userId).FirstOrDefault();
+                                couponListModel.Add(couponModel);
+                            }
+                        }
+                        else
+                        {
+                            message = "No coupon found for redemption. Please try again.";
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                     else
                     {
-                        message = response.message;
-                        messageType = AlertMessageType.Error;
+                        if (response.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+                            message = response.message;
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                 }
                 spinner = "d-none";

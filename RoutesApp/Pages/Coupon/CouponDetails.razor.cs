@@ -29,7 +29,6 @@ namespace RoutesApp.Pages.Coupon
                 }
                 var userState = authenticationState.Result;
                 string Token = userState.User.FindFirst("AccessToken").Value;
-                OfficerId = userState.User.FindFirst("OfficerId").Value;
                 Http.DefaultRequestHeaders.Clear();
                 Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion");
@@ -42,7 +41,7 @@ namespace RoutesApp.Pages.Coupon
                         CouponDetailData qrModel = new CouponDetailData();
                         qrModel.Id = item.couponId;
                         qrModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "?OfficerId=" + OfficerId + "");
+                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "");
                         model.Add(qrModel);
                     }
                 }

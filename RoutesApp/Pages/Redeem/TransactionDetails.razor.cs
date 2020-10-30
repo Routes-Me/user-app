@@ -18,10 +18,12 @@ namespace RoutesApp.Pages.Redeem
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
+        bool IsAccess = true;
         protected override async Task OnInitializedAsync()
         {
             try
             {
+                spinner = string.Empty;
                 var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
@@ -33,52 +35,83 @@ namespace RoutesApp.Pages.Redeem
                 }
                 var userState = authenticationState.Result;
                 string isOfficer = userState.User.FindFirst("isOfficer").Value;
-                if (isOfficer == "true")
-                {
-                    string tokenOfficerId = userState.User.FindFirst("OfficerId").Value;
-                    if (tokenOfficerId != officerId)
-                    {
-                        message = "You don't have permission to access this page.";
-                        messageType = AlertMessageType.Error;
-                    }
-                }
-                else
-                {
-                    message = "You don't have permission to access this page.";
-                    messageType = AlertMessageType.Error;
-                }
-
+                UserName = userState.User.FindFirst("Name").Value;
                 string Token = userState.User.FindFirst("AccessToken").Value;
                 Http.DefaultRequestHeaders.Clear();
                 Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
-                UserName = userState.User.FindFirst("Name").Value;
 
-                var result = await Http.GetAsync("/api/coupons/redeem/" + redemptionId + "?include=coupon,user");
-                var responseData = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
-                if (response.status == true)
+                if (isOfficer == "True")
                 {
-                    foreach (var item in response.data)
+                    string tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
+                    if (!string.IsNullOrEmpty(officerId))
                     {
-                        RedeemDetailModel redeemModel = new RedeemDetailModel();
-                        redeemModel.RedemptionId = item.RedemptionId;
-                        redeemModel.CreatedAt = item.CreatedAt;
-                        redeemModel.CouponId = item.CouponId;
-                        redeemModel.coupons = response.included.coupons.Where(x => x.couponId == item.CouponId).FirstOrDefault();
-                        redeemModel.Users = response.included.users.Where(x => x.UserId == redeemModel.coupons.userId).FirstOrDefault();
-                        model.Add(redeemModel);
+                        var officerResult = await Http.GetAsync("/api/officers/" + officerId + "");
+                        var officerResponseData = await officerResult.Content.ReadAsStringAsync();
+                        var officerResponse = JsonConvert.DeserializeObject<OfficersResponse>(officerResponseData);
+                        if (officerResponse.status == true)
+                        {
+                            string officerInstitutionId = string.Empty;
+                            foreach (var item in officerResponse.data)
+                            {
+                                officerInstitutionId = item.InstitutionId;
+                            }
+                            if (tokenInstitutionId != officerInstitutionId)
+                            {
+                                IsAccess = false;
+                                message = "You don't have permission to access this page.";
+                                messageType = AlertMessageType.Error;
+                            }
+                        }
+                        else
+                        {
+                            if (officerResponse.message.Contains("Authentication failed."))
+                            {
+                                navigationManager.NavigateTo("/");
+                            }
+                            else
+                            {
+                                IsAccess = false;
+                                message = officerResponse.message;
+                                messageType = AlertMessageType.Error;
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    if (response.message.Contains("Authentication failed."))
+                    IsAccess = false;
+                    message = "You don't have permission to access this page.";
+                    messageType = AlertMessageType.Error;
+                }
+                if (IsAccess == true)
+                {
+                    var result = await Http.GetAsync("/api/coupons/redeem/" + redemptionId + "?include=coupon,user");
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
+                    if (response.status == true)
                     {
-                        navigationManager.NavigateTo("/");
+                        foreach (var item in response.data)
+                        {
+                            RedeemDetailModel redeemModel = new RedeemDetailModel();
+                            redeemModel.RedemptionId = item.RedemptionId;
+                            redeemModel.CreatedAt = item.CreatedAt;
+                            redeemModel.CouponId = item.CouponId;
+                            redeemModel.coupons = response.included.coupons.Where(x => x.couponId == item.CouponId).FirstOrDefault();
+                            redeemModel.Users = response.included.users.Where(x => x.UserId == redeemModel.coupons.userId).FirstOrDefault();
+                            model.Add(redeemModel);
+                        }
                     }
                     else
                     {
-                        message = response.message;
-                        messageType = AlertMessageType.Error;
+                        if (response.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+                            message = response.message;
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                 }
                 spinner = "d-none";

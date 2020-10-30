@@ -14,7 +14,7 @@
 
 <div class="custom-container">
     <div class="top-bar">
-        <h2> Coupons </h2>
+        <h2> Promotions </h2>
         <div class="profile-name"> <a href="/profile"> @Name </a></div>
     </div>
     <AlertMessage Message="@message" MessageType="@messageType" />
@@ -23,7 +23,6 @@
         <div class="coupon-area">
             <h5 class="text-uppercase"> Available </h5>
             <div class=" masonry">
-
                 @foreach (var item in model)
                 {
                     <div class="single-card ">
@@ -36,13 +35,20 @@
                         </a>
                     </div>
                 }
-                @if (totalCount > 4)
-                {
-                    <div class="single-card">
-                        <div class="text-center"> <a href="/coupon-list" class="see-all-link"> +@(totalCount - model.Count) See All</a> </div>
-                    </div>
-                }
             </div>
+            @if (totalCount > 4)
+            {
+                <div class="single-card">
+                    <a href="/coupon-list" class="see-all-link">
+                        <div class="text-left">
+                            <div class="text-center">
+                                +@(totalCount - model.Count) See All
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
             @*<h5 class="text-uppercase mt-5"> Redeemed </h5>
                 <div class=" masonry only-two-item-column">
                     <div class="single-card">
