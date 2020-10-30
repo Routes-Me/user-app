@@ -22,7 +22,40 @@ namespace RoutesApp.Pages.Redeem
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
+        bool IsSearch = false;
         protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                string searchTerm = string.Empty;
+                await GetRedeemHistory(searchTerm);
+                spinner = "d-none";
+            }
+            catch (Exception)
+            {
+                message = "Something went wrong!! Please try again.";
+                messageType = AlertMessageType.Error;
+                spinner = "d-none";
+            }
+        }
+
+        private async Task SearchChanged(string searchTerm)
+        {
+            try
+            {
+                spinner = string.Empty;
+                await GetRedeemHistory(searchTerm);
+                spinner = "d-none";
+            }
+            catch (Exception)
+            {
+                message = "Something went wrong!! Please try again.";
+                messageType = AlertMessageType.Error;
+                spinner = "d-none";
+            }
+
+        }
+        private async Task GetRedeemHistory(string searchTerm)
         {
             try
             {
@@ -46,13 +79,27 @@ namespace RoutesApp.Pages.Redeem
                     Name = UserName.Substring(0, 2);
                 }
 
-                var result = await Http.GetAsync("/api/coupons/redeem?officerId=" + officerId + "&include=coupon");
-                var responseData = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
+                RedemptionGetResponse response = new RedemptionGetResponse();
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    IsSearch = false;
+                    var result = await Http.GetAsync("/api/coupons/redeem?officerId=" + officerId + "&include=coupon");
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
+                }
+                else
+                {
+                    IsSearch = true;
+                    var result = await Http.GetAsync("/api/coupons/redeem/search?officerId=" + officerId + "&q=" + searchTerm + "&include=coupon");
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);
+                }
+                model = new List<RedeemHistory>();
                 if (response.status == true)
                 {
                     if (response.data != null && response.data.Count > 0)
                     {
+                        message = string.Empty;
                         foreach (var item in response.data)
                         {
                             RedeemHistory redeemModel = new RedeemHistory();
@@ -73,22 +120,22 @@ namespace RoutesApp.Pages.Redeem
                 }
                 else
                 {
-                    message = response.message;
-                    messageType = AlertMessageType.Error;
+                    if (response.message.Contains("Authentication failed."))
+                    {
+                        navigationManager.NavigateTo("/");
+                    }
+                    else
+                    {
+                        message = response.message;
+                        messageType = AlertMessageType.Error;
+                    }
                 }
                 spinner = "d-none";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                message = "Something went wrong!! Please try again.";
-                messageType = AlertMessageType.Error;
-                spinner = "d-none";
+                throw ex;
             }
-        }
-
-        private async Task SearchChanged(string searchTerm)
-        {
-          
         }
     }
 }

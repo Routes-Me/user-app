@@ -34,7 +34,7 @@ namespace RoutesApp.Pages.Auth
                     messageType = AlertMessageType.Error;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;

@@ -52,7 +52,11 @@ namespace RoutesApp.Pages.Promotions
                     }
                     else
                     {
-                        if (response.message.Contains("Coupons already redeemed"))
+                        if (response.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else if (response.message.Contains("Coupons already redeemed"))
                         {
                             await JSRuntime.InvokeVoidAsync("displayPopupModel", response.message);
                         }

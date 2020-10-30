@@ -24,6 +24,7 @@ namespace RoutesApp.Pages.Auth
         {
             try
             {
+                spinner = string.Empty;
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
                 string KeyForAndroid = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";

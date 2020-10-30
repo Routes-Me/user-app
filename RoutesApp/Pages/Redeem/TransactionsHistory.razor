@@ -20,13 +20,18 @@
         <div class="profile-name"> <a href="/profile"> @Name </a></div>
     </div>
     <AlertMessage Message="@message" MessageType="@messageType" />
-    @if (model != null && model.Count > 0)
+    @if (IsSearch == true)
     {
-        <div class="search">
-            <input type="text" class="form-control" placeholder="Search ids, names …" @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => await OnSearchChanged.InvokeAsync(SearchTerm)" />
-
-        </div>
+        <Search OnSearchChanged="SearchChanged" />
     }
+    else
+    {
+        if (model != null && model.Count > 0)
+        {
+            <Search OnSearchChanged="SearchChanged" />
+        }
+    }
+
     <ul class="theme-list">
         @foreach (var item in model)
         {

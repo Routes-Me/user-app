@@ -18,7 +18,7 @@ namespace RoutesApp.Pages.Auth
     {
         Models.DbModels.Login model = new Models.DbModels.Login();
         bool isPhone = false, isEmail = true;
-        string otpSentSuccess = "d-none", otpSentProgress = "d-none", spinner = "d-none", message = string.Empty;
+        string otpSentSuccess = "d-none", otpSentProgress = "d-none", spinner = "d-none", message = string.Empty, returnUrl = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         bool officer = false;
         string OfficerId = string.Empty;
@@ -58,6 +58,7 @@ namespace RoutesApp.Pages.Auth
                 var response = JsonConvert.DeserializeObject<Response>(responseData);
                 if (response.status == true)
                 {
+                    message = string.Empty;
                     otpSentProgress = "d-none";
                     otpSentSuccess = "";
                     await JSRuntime.InvokeVoidAsync("timer", 240);
@@ -88,8 +89,7 @@ namespace RoutesApp.Pages.Auth
             {
                 spinner = "";
                 bool IsRedeem = false;
-                await Task.Delay(1);
-                string returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
+                returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
                 if (returnUrl == "/")
                 {
                     returnUrl = string.Empty;
@@ -99,12 +99,15 @@ namespace RoutesApp.Pages.Auth
                     returnUrl = returnUrl.Replace("/?", "");
                 }
 
-                string[] arrReturnUrl = returnUrl.Split('/');
-                if (arrReturnUrl.Length > 0)
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
-                    if (arrReturnUrl[1].ToLower() == "redeem")
+                    string[] arrReturnUrl = returnUrl.Split('/');
+                    if (arrReturnUrl.Length > 0)
                     {
-                        IsRedeem = true;
+                        if (arrReturnUrl[1].ToLower() == "redeem")
+                        {
+                            IsRedeem = true;
+                        }
                     }
                 }
                 EncryptionClass encryption = new EncryptionClass();
@@ -137,6 +140,7 @@ namespace RoutesApp.Pages.Auth
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        message = string.Empty;
                         Http.DefaultRequestHeaders.Clear();
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
                         var jwtPayload = await parseJwtAsync(response.token);
@@ -206,6 +210,7 @@ namespace RoutesApp.Pages.Auth
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
                     if (response.status == true)
                     {
+                        message = string.Empty;
                         Http.DefaultRequestHeaders.Clear();
                         Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {response.token}");
                         var jwtPayload = await parseJwtAsync(response.token);

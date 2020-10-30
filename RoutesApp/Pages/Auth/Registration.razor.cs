@@ -61,6 +61,7 @@ namespace RoutesApp.Pages.Auth
                 var response = JsonConvert.DeserializeObject<Response>(responseData);
                 if (response.status == true)
                 {
+                    message = string.Empty;
                     otpSentProgress = "d-none";
                     otpSentSuccess = "";
                     await JSRuntime.InvokeVoidAsync("timer", 240);
@@ -136,6 +137,7 @@ namespace RoutesApp.Pages.Auth
                 var response = JsonConvert.DeserializeObject<QRUsersResponse>(responseData);
                 if (response.status == true)
                 {
+                    message = string.Empty;
                     navigationManager.NavigateTo("/");
                 }
                 else
@@ -156,6 +158,7 @@ namespace RoutesApp.Pages.Auth
         {
             try
             {
+                spinner = string.Empty;
                 if (isEmail)
                 {
                     await UserSignup();
@@ -174,6 +177,7 @@ namespace RoutesApp.Pages.Auth
                     var response = JsonConvert.DeserializeObject<Response>(responseData);
                     if (response.status == true)
                     {
+                        message = string.Empty;
                         await UserSignup();
                     }
                     else

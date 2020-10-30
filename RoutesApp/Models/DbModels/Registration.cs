@@ -64,7 +64,7 @@ namespace RoutesApp.Models.DbModels
 
         [Required]
         [DataType(DataType.Password)]
-        [Compare("Password")]
+        [Compare("Password", ErrorMessage = "Password and confirmation password must match.")]
         public string ConfirmPassword { get; set; }
     }
     public class ChangePasswordModel

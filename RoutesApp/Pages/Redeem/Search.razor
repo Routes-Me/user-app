@@ -1,0 +1,4 @@
+﻿<div class="search">
+    <input type="text" class="form-control" placeholder="Search ids, names …"
+           @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => await OnSearchChanged.InvokeAsync(SearchTerm)" />
+</div>

@@ -59,8 +59,15 @@ namespace RoutesApp.Pages.Redeem
                 }
                 else
                 {
-                    message = response.message;
-                    messageType = AlertMessageType.Error;
+                    if (response.message.Contains("Authentication failed."))
+                    {
+                        navigationManager.NavigateTo("/");
+                    }
+                    else
+                    {
+                        message = response.message;
+                        messageType = AlertMessageType.Error;
+                    }
                 }
                 spinner = "d-none";
             }
@@ -108,8 +115,15 @@ namespace RoutesApp.Pages.Redeem
                 }
                 else
                 {
-                    message = response.message;
-                    messageType = AlertMessageType.Error;
+                    if (response.message.Contains("Authentication failed."))
+                    {
+                        navigationManager.NavigateTo("/");
+                    }
+                    else
+                    {
+                        message = response.message;
+                        messageType = AlertMessageType.Error;
+                    }
                 }
                 spinner = "d-none";
             }

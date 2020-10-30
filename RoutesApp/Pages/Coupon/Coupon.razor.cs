@@ -60,6 +60,18 @@ namespace RoutesApp.Pages.Coupon
                             messageType = AlertMessageType.Error;
                         }
                     }
+                    else
+                    {
+                        if (couponResponse.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+                            message = couponResponse.message;
+                            messageType = AlertMessageType.Error;
+                        }
+                    }
                 }
                 else
                 {
@@ -89,8 +101,15 @@ namespace RoutesApp.Pages.Coupon
                     }
                     else
                     {
-                        message = response.message;
-                        messageType = AlertMessageType.Error;
+                        if (response.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+                            message = response.message;
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                 }
                 spinner = "d-none";
