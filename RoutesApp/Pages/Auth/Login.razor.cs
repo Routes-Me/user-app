@@ -256,9 +256,9 @@ namespace RoutesApp.Pages.Auth
                 }
                 spinner = "d-none";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                message = "Something went wrong!! Please try again. " + ex.Message;
+                message = "Something went wrong!! Please try again. ";
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";
