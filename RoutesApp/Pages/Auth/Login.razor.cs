@@ -87,7 +87,8 @@ namespace RoutesApp.Pages.Auth
         {
             try
             {
-                spinner = "";
+                spinner = string.Empty;
+                await Task.Delay(1);
                 bool IsRedeem = false;
                 returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
                 if (returnUrl == "/")
@@ -254,7 +255,6 @@ namespace RoutesApp.Pages.Auth
                         messageType = AlertMessageType.Error;
                     }
                 }
-                spinner = "d-none";
             }
             catch (Exception)
             {
@@ -262,6 +262,7 @@ namespace RoutesApp.Pages.Auth
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";
+            await Task.Delay(1);
         }
 
         private async Task GetOfficerAsync(TokenPayload jwtPayload)

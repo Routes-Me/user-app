@@ -144,7 +144,6 @@ namespace RoutesApp.Pages.Auth
                 {
                     message = response.message;
                     messageType = AlertMessageType.Error;
-                    spinner = "d-none";
                 }
             }
             catch (Exception ex)
@@ -159,6 +158,7 @@ namespace RoutesApp.Pages.Auth
             try
             {
                 spinner = string.Empty;
+                await Task.Delay(1);
                 if (isEmail)
                 {
                     await UserSignup();
@@ -191,8 +191,9 @@ namespace RoutesApp.Pages.Auth
             {
                 message = "Something went wrong!! Please try again.";
                 messageType = AlertMessageType.Error;
-                spinner = "d-none";
             }
+            spinner = "d-none";
+            await Task.Delay(1);
         }
     }
 }

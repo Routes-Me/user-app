@@ -12,12 +12,10 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class Coupon
     {
-        [Parameter]
-        public string CouponId { get; set; }
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         int counter = 0, totalCount = 0;
-        string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty;
+        string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty, OfficerId = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
 
@@ -28,6 +26,7 @@ namespace RoutesApp.Pages.Coupon
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
                 tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
+                OfficerId = userState.User.FindFirst("OfficerId").Value;
                 string UserName = userState.User.FindFirst("Name").Value;
                 string Token = userState.User.FindFirst("AccessToken").Value;
                 Http.DefaultRequestHeaders.Clear();
@@ -41,75 +40,41 @@ namespace RoutesApp.Pages.Coupon
                 {
                     Name = UserName.Substring(0, 2);
                 }
-
-                if (!string.IsNullOrEmpty(CouponId))
+                var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
+                var responseData = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
+                if (response.status == true)
                 {
-                    var couponResult = await Http.GetAsync("/api/coupons/" + CouponId + "?include=promotion");
-                    var couponResponseData = await couponResult.Content.ReadAsStringAsync();
-                    var couponResponse = JsonConvert.DeserializeObject<CouponGetResponse>(couponResponseData);
-                    if (couponResponse.status == true)
+                    totalCount = response.data.Count();
+                    if (totalCount > 0)
                     {
-                        string promotionInstitutionId = couponResponse.included.promotions.Select(x => x.InstitutionId).FirstOrDefault();
-                        if (tokenInstitutionId == promotionInstitutionId)
+                        message = string.Empty;
+                        foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
                         {
-                            navigationManager.NavigateTo("/redeem?id=" + CouponId + "");
-                        }
-                        else
-                        {
-                            message = "Opps!! You are not authorize to redeem coupon.";
-                            messageType = AlertMessageType.Error;
+                            CouponListData couponList = new CouponListData();
+                            couponList.Id = item.couponId;
+                            couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
+                            couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "?OfficerId=" + OfficerId + "");
+                            couponList.Count = totalCount;
+                            model.Add(couponList);
                         }
                     }
                     else
                     {
-                        if (couponResponse.message.Contains("Authentication failed."))
-                        {
-                            navigationManager.NavigateTo("/");
-                        }
-                        else
-                        {
-                            message = couponResponse.message;
-                            messageType = AlertMessageType.Error;
-                        }
+                        message = "No coupons available.";
+                        messageType = AlertMessageType.Error;
                     }
                 }
                 else
                 {
-                    var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
-                    var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
-                    if (response.status == true)
+                    if (response.message.Contains("Authentication failed."))
                     {
-                        totalCount = response.data.Count();
-                        if(totalCount > 0)
-                        {
-                            foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
-                            {
-                                CouponListData couponList = new CouponListData();
-                                couponList.Id = item.couponId;
-                                couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                                couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/coupons/" + item.couponId + "");
-                                couponList.Count = totalCount;
-                                model.Add(couponList);
-                            }
-                        }
-                        else
-                        {
-                            message = "No coupons available.";
-                            messageType = AlertMessageType.Error;
-                        }
+                        navigationManager.NavigateTo("/");
                     }
                     else
                     {
-                        if (response.message.Contains("Authentication failed."))
-                        {
-                            navigationManager.NavigateTo("/");
-                        }
-                        else
-                        {
-                            message = response.message;
-                            messageType = AlertMessageType.Error;
-                        }
+                        message = response.message;
+                        messageType = AlertMessageType.Error;
                     }
                 }
                 spinner = "d-none";

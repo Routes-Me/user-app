@@ -56,7 +56,7 @@ namespace RoutesApp.Pages.Promotions
                         {
                             navigationManager.NavigateTo("/");
                         }
-                        else if (response.message.Contains("Coupons already redeemed"))
+                        else if (response.message.Contains("Coupons already generated for this promotion"))
                         {
                             await JSRuntime.InvokeVoidAsync("displayPopupModel", response.message);
                         }

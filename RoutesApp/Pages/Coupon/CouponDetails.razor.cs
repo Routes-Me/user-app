@@ -13,7 +13,7 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class CouponDetails
     {
-        string spinner = "", couponId = string.Empty, token = string.Empty, message = string.Empty;
+        string spinner = "", couponId = string.Empty, token = string.Empty, message = string.Empty, OfficerId = string.Empty;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         List<CouponDetailData> model = new List<CouponDetailData>();
@@ -29,6 +29,7 @@ namespace RoutesApp.Pages.Coupon
                 }
                 var userState = authenticationState.Result;
                 string Token = userState.User.FindFirst("AccessToken").Value;
+                OfficerId = userState.User.FindFirst("OfficerId").Value;
                 Http.DefaultRequestHeaders.Clear();
                 Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion");
@@ -41,7 +42,7 @@ namespace RoutesApp.Pages.Coupon
                         CouponDetailData qrModel = new CouponDetailData();
                         qrModel.Id = item.couponId;
                         qrModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "");
+                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "?OfficerId=" + OfficerId + "");
                         model.Add(qrModel);
                     }
                 }

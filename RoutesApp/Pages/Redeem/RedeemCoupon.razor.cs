@@ -19,7 +19,7 @@ namespace RoutesApp.Pages.Redeem
         [Parameter]
         public string CouponId { get; set; }
 
-        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, expiredCode = string.Empty, token = string.Empty;
+        string spinner = string.Empty, UserName = string.Empty, message = string.Empty, expiredCode = string.Empty, token = string.Empty, officerId = string.Empty;
         List<CouponDetailData> couponListModel = new List<CouponDetailData>();
         Redemption model = new Redemption();
 
@@ -30,7 +30,28 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("OfficerId", out var _id))
+                {
+                    officerId = _id;
+                }
                 var userState = authenticationState.Result;
+                string isOfficer = userState.User.FindFirst("isOfficer").Value;
+                if (isOfficer == "true")
+                {
+                    string tokenOfficerId = userState.User.FindFirst("OfficerId").Value;
+                    if (tokenOfficerId != officerId)
+                    {
+                        message = "You don't have permission to access this page.";
+                        messageType = AlertMessageType.Error;
+                    }
+                }
+                else
+                {
+                    message = "You don't have permission to access this page.";
+                    messageType = AlertMessageType.Error;
+                }
+
                 UserName = userState.User.FindFirst("Name").Value;
                 string Token = userState.User.FindFirst("AccessToken").Value;
                 Http.DefaultRequestHeaders.Clear();

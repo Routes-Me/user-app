@@ -27,6 +27,27 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
+                {
+                    officerId = _id;
+                }
+                var userState = authenticationState.Result;
+                string isOfficer = userState.User.FindFirst("isOfficer").Value;
+                if (isOfficer == "true")
+                {
+                    string tokenOfficerId = userState.User.FindFirst("OfficerId").Value;
+                    if (tokenOfficerId != officerId)
+                    {
+                        message = "You don't have permission to access this page.";
+                        messageType = AlertMessageType.Error;
+                    }
+                }
+                else
+                {
+                    message = "You don't have permission to access this page.";
+                    messageType = AlertMessageType.Error;
+                }
                 string searchTerm = string.Empty;
                 await GetRedeemHistory(searchTerm);
                 spinner = "d-none";

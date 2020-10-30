@@ -22,11 +22,6 @@ namespace RoutesApp.Pages.Redeem
         {
             try
             {
-                var userState = authenticationState.Result;
-                string Token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Clear();
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
-                UserName = userState.User.FindFirst("Name").Value;
                 var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))
                 {
@@ -36,6 +31,28 @@ namespace RoutesApp.Pages.Redeem
                 {
                     officerId = _officerid;
                 }
+                var userState = authenticationState.Result;
+                string isOfficer = userState.User.FindFirst("isOfficer").Value;
+                if (isOfficer == "true")
+                {
+                    string tokenOfficerId = userState.User.FindFirst("OfficerId").Value;
+                    if (tokenOfficerId != officerId)
+                    {
+                        message = "You don't have permission to access this page.";
+                        messageType = AlertMessageType.Error;
+                    }
+                }
+                else
+                {
+                    message = "You don't have permission to access this page.";
+                    messageType = AlertMessageType.Error;
+                }
+
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                UserName = userState.User.FindFirst("Name").Value;
+
                 var result = await Http.GetAsync("/api/coupons/redeem/" + redemptionId + "?include=coupon,user");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<RedemptionGetResponse>(responseData);

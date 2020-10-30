@@ -25,6 +25,7 @@ namespace RoutesApp.Pages.Auth
             try
             {
                 spinner = string.Empty;
+                await Task.Delay(1);
                 EncryptionClass encryption = new EncryptionClass();
                 string IVForAndroid = "Qz-N!p#ATb9_2MkL";
                 string KeyForAndroid = "ledV\\K\"zRaNF]WXki,RMtLLZ{Cyr_1";
@@ -46,7 +47,6 @@ namespace RoutesApp.Pages.Auth
                     UserId = UserId,
                     NewPassword = EncryptedPassword
                 };
-                spinner = "";
                 var serializedValue = JsonConvert.SerializeObject(changePasswordModel);
                 var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
                 var result = await Http.PutAsync("/api/account/password", stringContent).ConfigureAwait(false);
@@ -71,6 +71,7 @@ namespace RoutesApp.Pages.Auth
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";
+            await Task.Delay(1);
         }
     }
 }
