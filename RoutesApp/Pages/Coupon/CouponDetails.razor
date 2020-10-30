@@ -33,7 +33,7 @@
                             <p>@item.Promotion.Subtitle</p>
                             @if (item.Promotion.EndAt != null)
                             {
-                                <p><span class="badge badge-light ">Valid till @(item.Promotion.EndAt)</span></p>
+                                <p><span class="badge badge-light ">Valid till @((Convert.ToDateTime(item.Promotion.EndAt).Date).ToString("dd/MM/yyyy"))</span></p>
                             }
                         </div>
                     }

@@ -50,7 +50,7 @@
                             @if (item.Promotion.EndAt > DateTime.UtcNow)
                             {
                                 <p>
-                                    <span class="badge badge-light-green border-radius-15 pl-2 pr-2">Valid till @item.Promotion.EndAt</span>
+                                    <span class="badge badge-light-green border-radius-15 pl-2 pr-2">Valid till @((Convert.ToDateTime(item.Promotion.EndAt).Date).ToString("dd/MM/yyyy"))</span>
                                 </p>
                             }
                             else

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace RoutesApp.Pages.Redeem
 {
@@ -15,6 +16,10 @@ namespace RoutesApp.Pages.Redeem
         string spinner = string.Empty, message = string.Empty, officerId = string.Empty, token = string.Empty, Name = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         List<RedeemHistory> model = new List<RedeemHistory>();
+        public string SearchTerm { get; set; }
+        [Parameter]
+        public EventCallback<string> OnSearchChanged { get; set; }
+
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         protected override async Task OnInitializedAsync()
@@ -28,6 +33,9 @@ namespace RoutesApp.Pages.Redeem
                 }
                 var userState = authenticationState.Result;
                 string UserName = userState.User.FindFirst("Name").Value;
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 string[] arrUserName = UserName.Split(' ');
                 if (arrUserName.Length > 1)
                 {
@@ -76,6 +84,11 @@ namespace RoutesApp.Pages.Redeem
                 messageType = AlertMessageType.Error;
                 spinner = "d-none";
             }
+        }
+
+        private async Task SearchChanged(string searchTerm)
+        {
+          
         }
     }
 }

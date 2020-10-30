@@ -29,6 +29,9 @@ namespace RoutesApp.Pages.Coupon
                 userId = userState.User.FindFirst("UserId").Value;
                 tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
                 string UserName = userState.User.FindFirst("Name").Value;
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 string[] arrUserName = UserName.Split(' ');
                 if (arrUserName.Length > 1)
                 {

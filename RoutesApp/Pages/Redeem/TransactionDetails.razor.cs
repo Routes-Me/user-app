@@ -23,6 +23,9 @@ namespace RoutesApp.Pages.Redeem
             try
             {
                 var userState = authenticationState.Result;
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 UserName = userState.User.FindFirst("Name").Value;
                 var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _id))

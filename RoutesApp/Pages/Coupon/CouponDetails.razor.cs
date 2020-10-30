@@ -27,6 +27,10 @@ namespace RoutesApp.Pages.Coupon
                 {
                     couponId = _id;
                 }
+                var userState = authenticationState.Result;
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 var result = await Http.GetAsync("/api/coupons/" + couponId + "?include=promotion");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);

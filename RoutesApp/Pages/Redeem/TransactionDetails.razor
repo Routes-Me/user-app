@@ -32,7 +32,37 @@
                     <div class="col-6">
                         <label>Date</label>
                     </div>
-                    <div class="col-6 d-flex align-items-center justify-content-end"> <p>@item.CreatedAt</p> </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end">
+                        @if (Convert.ToDateTime(item.CreatedAt) <= DateTime.Now && Convert.ToDateTime(item.CreatedAt) >= DateTime.Now.AddDays(-6))
+                        {
+                            if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.Date)
+                            {
+                                <p>
+                                    @( "Today at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                </p>
+
+                            }
+                            else if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.AddDays(-1).Date)
+                            {
+                                <p>
+                                    @( "Yestrday at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                </p>
+                            }
+                            else
+                            {
+                                <p>
+                                    @(Convert.ToDateTime(item.CreatedAt).ToString("dddd") + " at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <p>
+                                @((Convert.ToDateTime(item.CreatedAt).Date).ToString("dd/MM/yyyy"))
+                            </p>
+
+                        }
+                    </div>
                 </div>
                 <div class="form-group row mr-0 ml-0 mb-0">
                     <div class="col-6">
@@ -47,7 +77,7 @@
                     <div class="col-6">
                         <p><b class="d-block">ID</b> @item.CouponId</p>
                     </div>
-                    <div class="col-6 d-flex align-items-center justify-content-end"> <img src="images/brand-logo.png" width="25" height="25" alt="" class="border-radius-5" /> </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end"> <img src=@item.coupons.Promotion.LogoUrl width="25" height="25" alt="" class="border-radius-5" /> </div>
                 </div>
                 <div class="form-group row mr-0 ml-0 mb-0">
                     <div class="col-12">

@@ -8,6 +8,7 @@
     body {
         background-color: #fff !important;
     }
+
     .theme-list li {
         padding-top: 15px !important;
     }
@@ -22,7 +23,8 @@
     @if (model != null && model.Count > 0)
     {
         <div class="search">
-            <input type="text" class="form-control" placeholder="Search ids, names …">
+            <input type="text" class="form-control" placeholder="Search ids, names …" @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => await OnSearchChanged.InvokeAsync(SearchTerm)" />
+
         </div>
     }
     <ul class="theme-list">
@@ -34,7 +36,37 @@
                 <div class="right-side">
                     <div class="row">
                         <div class="col-4">@item.RedemptionId</div>
-                        <div class="col-8 text-right">@item.CreatedAt</div>
+
+                        @if (Convert.ToDateTime(item.CreatedAt) <= DateTime.Now && Convert.ToDateTime(item.CreatedAt) >= DateTime.Now.AddDays(-6))
+                        {
+                            if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.Date)
+                            {
+                                <div class="col-8 text-right">
+                                    @( "Today at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                </div>
+
+                            }
+                            else if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.AddDays(-1).Date)
+                            {
+                                <div class="col-8 text-right">
+                                    @( "Yestrday at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-8 text-right">
+                                    @(Convert.ToDateTime(item.CreatedAt).ToString("dddd") + " at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-8 text-right">
+                                @((Convert.ToDateTime(item.CreatedAt).Date).ToString("dd/MM/yyyy"))
+                            </div>
+
+                        }
+
                         <div class="col-12">
                             <p class="short-info">@item.Title</p>
                         </div>

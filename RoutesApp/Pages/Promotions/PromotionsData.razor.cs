@@ -31,6 +31,9 @@ namespace RoutesApp.Pages.Promotions
                 spinner = "";
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
+                string Token = userState.User.FindFirst("AccessToken").Value;
+                Http.DefaultRequestHeaders.Clear();
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
                 if (!string.IsNullOrEmpty(PromotionId) && Convert.ToInt32(PromotionId) > 0)
                 {
                     Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
