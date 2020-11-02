@@ -88,7 +88,7 @@ namespace RoutesApp.Pages.Auth
             try
             {
                 spinner = string.Empty;
-                await Task.Delay(2);
+                await Task.Delay(1);
                 bool IsRedeem = false;
                 returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
                 if (returnUrl == "/")
@@ -139,6 +139,7 @@ namespace RoutesApp.Pages.Auth
                     var result = await Http.PostAsync("/api/signin", stringContent).ConfigureAwait(false);
                     var responseData = await result.Content.ReadAsStringAsync();
                     var response = JsonConvert.DeserializeObject<SignInResponse>(responseData);
+
                     if (response.status == true)
                     {
                         message = string.Empty;

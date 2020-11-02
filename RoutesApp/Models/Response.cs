@@ -199,4 +199,19 @@ namespace RoutesApp.Models
         public string QrCodeImage { get; set; }
     }
 
+    public class LinkResponse : Response
+    {
+        public Pagination pagination { get; set; }
+        public List<LinksModel> data { get; set; }
+    }
+
+    public class LinksModel
+    {
+        public string LinkId { get; set; }
+        public string PromotionId { get; set; }
+        public string Web { get; set; }
+        public string Ios { get; set; }
+        public string Android { get; set; }
+    }
+
 }

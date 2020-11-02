@@ -256,3 +256,27 @@ $(document).on('click', '.back-to-profile', function () {
     $('#reader').addClass('d-none');
     $('.qr-code-scanner-container').addClass('d-none');
 });
+
+function GetDevice() {
+    if (jQuery.browser.mobile) {
+        if (/IEMobile/i.test(navigator.userAgent)) {
+            return "windows";
+        }
+
+        if (/Android/i.test(navigator.userAgent)) {
+            return "android";
+        }
+
+        if (/BlackBerry/i.test(navigator.userAgent)) {
+            return "blackberry";
+        }
+
+        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            return "ios";
+        }
+    }
+    else {
+        return "web";
+    }
+}
+

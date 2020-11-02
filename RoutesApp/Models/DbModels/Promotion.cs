@@ -19,5 +19,7 @@ namespace RoutesApp.Models.DbModels
         public string InstitutionId { get; set; }
         public bool? IsSharable { get; set; }
         public string LogoUrl { get; set; }
+        public string type { get; set; }
+        
     }
 }
