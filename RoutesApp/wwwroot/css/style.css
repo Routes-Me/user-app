@@ -683,3 +683,8 @@ ul {
 .modal-backdrop {
     display: none;
 }
+
+.qr-scan-message {
+    text-align: center;
+    margin-top: 20px;
+}

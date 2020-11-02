@@ -88,7 +88,7 @@ namespace RoutesApp.Pages.Auth
             try
             {
                 spinner = string.Empty;
-                await Task.Delay(1);
+                await Task.Delay(2);
                 bool IsRedeem = false;
                 returnUrl = WebUtility.UrlDecode(new Uri(navigationManager.Uri).PathAndQuery);
                 if (returnUrl == "/")
@@ -229,7 +229,15 @@ namespace RoutesApp.Pages.Auth
                         {
                             if (!string.IsNullOrEmpty(OfficerId))
                             {
-                                navigationManager.NavigateTo("/history?id=" + OfficerId + "");
+                                if (IsRedeem == true)
+                                {
+                                    navigationManager.NavigateTo(returnUrl);
+                                }
+                                else
+                                {
+                                    navigationManager.NavigateTo("/history?id=" + OfficerId + "");
+                                }
+
                             }
                             else
                             {

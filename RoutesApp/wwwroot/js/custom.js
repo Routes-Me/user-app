@@ -244,3 +244,15 @@ function enableSubmit() {
         $('.reset-submit').addClass('disabled');
     }
 }
+
+$(document).on('click', '.qr-code-scanner', function () {
+    $('.user-profile').addClass('d-none');
+    $('.qr-code-scanner-container').removeClass('d-none');
+    $('#reader').removeClass('d-none');
+});
+
+$(document).on('click', '.back-to-profile', function () {
+    $('.user-profile').removeClass('d-none');
+    $('#reader').addClass('d-none');
+    $('.qr-code-scanner-container').addClass('d-none');
+});

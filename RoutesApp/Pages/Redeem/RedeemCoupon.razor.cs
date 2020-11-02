@@ -181,5 +181,14 @@ namespace RoutesApp.Pages.Redeem
                 spinner = "d-none";
             }
         }
+
+        public void Redirect()
+        {
+            spinner = string.Empty;
+            var userState = authenticationState.Result;
+            string officerId = userState.User.FindFirst("OfficerId").Value;
+            navigationManager.NavigateTo("/history?id=" + officerId + "");
+            spinner = "d-none";
+        }
     }
 }
