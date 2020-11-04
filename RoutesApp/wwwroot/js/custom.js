@@ -258,22 +258,17 @@ $(document).on('click', '.back-to-profile', function () {
 });
 
 function GetDevice() {
-    if (jQuery.browser.mobile) {
-        if (/IEMobile/i.test(navigator.userAgent)) {
-            return "windows";
-        }
-
-        if (/Android/i.test(navigator.userAgent)) {
-            return "android";
-        }
-
-        if (/BlackBerry/i.test(navigator.userAgent)) {
-            return "blackberry";
-        }
-
-        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            return "ios";
-        }
+    if (/IEMobile/i.test(navigator.userAgent)) {
+        return "windows";
+    }
+    else if (/Android/i.test(navigator.userAgent)) {
+        return "android";
+    }
+    else if (/BlackBerry/i.test(navigator.userAgent)) {
+        return "blackberry";
+    }
+    else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        return "ios";
     }
     else {
         return "web";

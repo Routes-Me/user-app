@@ -23,10 +23,7 @@ namespace RoutesApp.Pages.Promotions
         {
             try
             {
-                var userState = authenticationState.Result;
-                string Token = userState.User.FindFirst("AccessToken").Value;
-                Http.DefaultRequestHeaders.Clear();
-                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                spinner = string.Empty;
                 var result = await Http.GetAsync("/api/links?promotionId=" + PromotionId + "");
                 var responseData = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<LinkResponse>(responseData);
@@ -37,7 +34,7 @@ namespace RoutesApp.Pages.Promotions
                         string deviceName = await JSRuntime.InvokeAsync<string>("GetDevice");
                         foreach (var item in response.data)
                         {
-                            if(deviceName == "web")
+                            if (deviceName == "web")
                             {
                                 if (string.IsNullOrEmpty(item.Web))
                                 {
@@ -74,22 +71,14 @@ namespace RoutesApp.Pages.Promotions
                     }
                     else
                     {
-                        message = "No coupon found for redemption. Please try again.";
-                        messageType = AlertMessageType.Error;
+                        navigationManager.NavigateTo("/promotions/" + PromotionId + "");
                     }
                 }
                 else
                 {
-                    if (response.message.Contains("Authentication failed."))
-                    {
-                        navigationManager.NavigateTo("/");
-                    }
-                    else
-                    {
-                        message = response.message;
-                        messageType = AlertMessageType.Error;
-                    }
+                    navigationManager.NavigateTo("/promotions/" + PromotionId + "");
                 }
+                spinner = "d-none";
             }
             catch (Exception)
             {
