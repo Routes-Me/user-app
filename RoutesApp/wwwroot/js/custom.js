@@ -258,16 +258,16 @@ $(document).on('click', '.back-to-profile', function () {
 });
 
 function GetDevice() {
-    if (/IEMobile/i.test(navigator.userAgent)) {
+    if (/iemobile|windows phone/i.test(navigator.userAgent.toLowerCase())) {
         return "windows";
     }
-    else if (/Android/i.test(navigator.userAgent)) {
+    else if (/android/i.test(navigator.userAgent.toLowerCase())) {
         return "android";
     }
-    else if (/BlackBerry/i.test(navigator.userAgent)) {
+    else if (/blackberry/i.test(navigator.userAgent.toLowerCase())) {
         return "blackberry";
     }
-    else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    else if (/ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase())) {
         return "ios";
     }
     else {
