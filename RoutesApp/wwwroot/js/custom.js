@@ -245,10 +245,14 @@ function enableSubmit() {
     }
 }
 
-$(document).on('click', '.qr-code-scanner', function () {
+$(document).on('click', '.qr-code-scanner .scanner', function () {
     $('.user-profile').addClass('d-none');
     $('.qr-code-scanner-container').removeClass('d-none');
     $('#reader').removeClass('d-none');
+});
+
+$(document).on('click', '.qr-code-scanner .promotioncode', function () {
+    $("#popupModelForPromotionCode").modal();
 });
 
 $(document).on('click', '.back-to-profile', function () {
@@ -257,21 +261,26 @@ $(document).on('click', '.back-to-profile', function () {
     $('.qr-code-scanner-container').addClass('d-none');
 });
 
-function GetDevice() {
-    if (/iemobile|windows phone/i.test(navigator.userAgent.toLowerCase())) {
-        return "windows";
-    }
-    else if (/android/i.test(navigator.userAgent.toLowerCase())) {
-        return "android";
-    }
-    else if (/blackberry/i.test(navigator.userAgent.toLowerCase())) {
-        return "blackberry";
-    }
-    else if (/ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase())) {
-        return "ios";
+
+$(document).on('keyup', '#promotioncode', function (event) {
+    enableSubmit();
+});
+
+function enableSubmit() {
+    var promotionCode = $('#promotioncode').val();
+    if (promotionCode != '') {
+        $('.promotion-code-submit').removeClass('disabled');
     }
     else {
-        return "web";
+        $('.promotion-code-submit').addClass('disabled');
     }
 }
+
+$(document).on('click', '.promotion-model-close', function (event) {
+    $('.alert').text('');
+    $('.alert').hide()
+    $('#promotioncode').val('');
+});
+
+
 

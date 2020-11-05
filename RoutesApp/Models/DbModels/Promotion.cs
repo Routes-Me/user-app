@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,5 +22,11 @@ namespace RoutesApp.Models.DbModels
         public string LogoUrl { get; set; }
         public string type { get; set; }
         
+    }
+
+    public class PromotionCode
+    {
+        [Required(ErrorMessage = "Promotion field is required.")]
+        public string PromotionId { get; set; }
     }
 }

@@ -3,6 +3,8 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager navigationManager
 @inject ILocalStorageService storageService
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime;
 @attribute [Authorize]
 <style>
     body {
@@ -49,8 +51,11 @@
         </div>
         <h6>&nbsp;</h6>
         <div class="info-item row qr-code-scanner">
-            <div class="col-12 text-center">
-                <a href="javascript:void(0);" class="success">Scan QR Code</a>
+            <div class="col-6 text-center">
+                <a href="javascript:void(0);" class="success scanner">Scan QR Code</a>
+            </div>
+            <div class="col-6 text-center">
+                <a href="javascript:void(0);" class="success promotioncode">Have a promotion code?</a>
             </div>
         </div>
         <div class="info-item row">
@@ -58,7 +63,6 @@
                 <a href="javascript:void(0);" class="text-danger" @onclick="@Logout">Log Out</a>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -68,6 +72,43 @@
         <h6>Scan QR Code </h6>
     </div>
     <div class="qr-scan-message alert-danger"><h6></h6></div>
+</div>
+
+<div class="modal" id="popupModelForPromotionCode" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Promotions</h5>
+                <button type="button" class="close promotion-model-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body promotion-model-body">
+                <AlertMessage Message="@message" MessageType="@messageType" />
+                <div class="form-holder">
+                    <EditForm Model="model" OnValidSubmit="SubmitPromotionCode">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-filds">
+                            <div class="form-group m-0 ">
+                                <RadzenPassword type="text" @bind-Value="model.PromotionId" Placeholder="Enter promotion code" class="form-control txt-password" id="promotioncode"></RadzenPassword>
+                            </div>
+                        </div>
+                        <div class="form-group promotion-code-group">
+                            <button type="submit" class="btn btn-blue btn-lg promotion-code-submit disabled">Submit</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        <div class="loader @modelSpinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+    </div>
+</div>
+
+<div class="loader @spinner">
+    <i class="fas fa-spinner fa-spin"></i>
 </div>
 
 

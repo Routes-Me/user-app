@@ -688,3 +688,12 @@ ul {
     text-align: center;
     margin-top: 20px;
 }
+
+.promotion-code-group {
+    margin-top: 10px;
+}
+
+    .promotion-code-group button {
+        padding: 4px 0px;
+        font-size: 18px;
+    }
