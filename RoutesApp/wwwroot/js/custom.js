@@ -276,11 +276,6 @@ function enableSubmit() {
     }
 }
 
-$(document).on('click', '.promotion-model-close', function (event) {
-    $('.alert').text('');
-    $('.alert').hide()
-    $('#promotioncode').val('');
-});
 
 
 

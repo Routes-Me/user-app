@@ -26,7 +26,6 @@ namespace RoutesApp.Models.DbModels
 
     public class PromotionCode
     {
-        [Required(ErrorMessage = "Promotion field is required.")]
         public string PromotionId { get; set; }
     }
 }

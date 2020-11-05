@@ -18,6 +18,7 @@ namespace RoutesApp.Pages.Coupon
         string modelSpinner = "d-none";
         AlertMessageType messageType = AlertMessageType.Success;
         PromotionCode model = new PromotionCode();
+        bool IsError = false;
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
@@ -66,8 +67,9 @@ namespace RoutesApp.Pages.Coupon
                     {
                         if (promotionRresponse.data.Count == 0)
                         {
-                            message = "promotion not found.";
+                            message = "Enter valid promotion.";
                             messageType = AlertMessageType.Error;
+                            IsError = true;
                         }
                     }
                     else
@@ -78,39 +80,43 @@ namespace RoutesApp.Pages.Coupon
                         }
                         else
                         {
-                            message = "promotion not found.";
+                            message = "Enter valid promotion.";
                             messageType = AlertMessageType.Error;
+                            IsError = true;
                         }
                     }
 
-
-                    Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
+                    if (IsError == false)
                     {
-                        promotionId = model.PromotionId,
-                        userId = userId
-                    };
-                    Http.DefaultRequestHeaders.Clear();
-                    Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
-                    var serializedValue = JsonConvert.SerializeObject(coupon);
-                    var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
-                    var result = await Http.PostAsync("/api/coupons", stringContent).ConfigureAwait(false);
-                    var responseData = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<Response>(responseData);
-                    if (response.status == true)
-                    {
-                        navigationManager.NavigateTo("/promotion-details?id=" + model.PromotionId + "");
-                    }
-                    else
-                    {
-                        if (response.message.Contains("Authentication failed."))
+                        Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
                         {
-                            navigationManager.NavigateTo("/");
+                            promotionId = model.PromotionId,
+                            userId = userId
+                        };
+                        Http.DefaultRequestHeaders.Clear();
+                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                        var serializedValue = JsonConvert.SerializeObject(coupon);
+                        var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
+                        var result = await Http.PostAsync("/api/coupons", stringContent).ConfigureAwait(false);
+                        var responseData = await result.Content.ReadAsStringAsync();
+                        var response = JsonConvert.DeserializeObject<Response>(responseData);
+                        if (response.status == true)
+                        {
+                            navigationManager.NavigateTo("/promotion-details?id=" + model.PromotionId + "");
                         }
                         else
                         {
-                            message = response.message;
+                            if (response.message.Contains("Authentication failed."))
+                            {
+                                navigationManager.NavigateTo("/");
+                            }
+                            else
+                            {
+                                message = response.message;
+                                messageType = AlertMessageType.Error;
+                            }
                         }
-                        messageType = AlertMessageType.Error;
+
                     }
                 }
                 else

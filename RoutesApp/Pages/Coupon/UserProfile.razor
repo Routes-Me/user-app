@@ -83,8 +83,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <AlertMessage Message="@message" MessageType="@messageType" />
             <div class="modal-body promotion-model-body">
-                <AlertMessage Message="@message" MessageType="@messageType" />
                 <div class="form-holder">
                     <EditForm Model="model" OnValidSubmit="SubmitPromotionCode">
                         <DataAnnotationsValidator />
