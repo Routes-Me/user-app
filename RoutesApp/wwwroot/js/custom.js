@@ -263,10 +263,10 @@ $(document).on('click', '.back-to-profile', function () {
 
 
 $(document).on('keyup', '#promotioncode', function (event) {
-    enableSubmit();
+    enableSubmitForPromotion();
 });
 
-function enableSubmit() {
+function enableSubmitForPromotion() {
     var promotionCode = $('#promotioncode').val();
     if (promotionCode != '') {
         $('.promotion-code-submit').removeClass('disabled');
