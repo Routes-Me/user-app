@@ -11,10 +11,12 @@ namespace RoutesApp.Pages.Redeem
 {
     public partial class RedeemSuccess
     {
+        #pragma warning disable
         string spinner = string.Empty, message = string.Empty, trasactionId = string.Empty, officerId = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
+        #pragma warning restore
         protected override void OnInitialized()
         {
             try
@@ -33,6 +35,7 @@ namespace RoutesApp.Pages.Redeem
                 spinner = "d-none";
             }
         }
+
 
         public void Redirect()
         {

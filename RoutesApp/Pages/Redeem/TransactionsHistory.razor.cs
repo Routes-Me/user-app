@@ -13,6 +13,7 @@ namespace RoutesApp.Pages.Redeem
 {
     public partial class TransactionsHistory
     {
+        #pragma warning disable
         string spinner = string.Empty, message = string.Empty, officerId = string.Empty, token = string.Empty, Name = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         List<RedeemHistory> model = new List<RedeemHistory>();
@@ -23,6 +24,8 @@ namespace RoutesApp.Pages.Redeem
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         bool IsSearch = false, IsAccess = true;
+
+        #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try

@@ -16,12 +16,14 @@ namespace RoutesApp.Pages.Auth
 {
     public partial class Login
     {
+        #pragma warning disable
         Models.DbModels.Login model = new Models.DbModels.Login();
         bool isPhone = false, isEmail = true;
         string otpSentSuccess = "d-none", otpSentProgress = "d-none", spinner = "d-none", message = string.Empty, returnUrl = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         bool officer = false;
         string OfficerId = string.Empty;
+        #pragma warning restore
 
         public async Task CheckEmailOrPhone()
         {

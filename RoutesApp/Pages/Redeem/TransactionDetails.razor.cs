@@ -13,12 +13,15 @@ namespace RoutesApp.Pages.Redeem
 {
     public partial class TransactionDetails
     {
+        #pragma warning disable
         string spinner = string.Empty, UserName = string.Empty, message = string.Empty, redemptionId = string.Empty, officerId = string.Empty, token = string.Empty;
         List<RedeemDetailModel> model = new List<RedeemDetailModel>();
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         bool IsAccess = true;
+        #pragma warning restore
+
         protected override async Task OnInitializedAsync()
         {
             try

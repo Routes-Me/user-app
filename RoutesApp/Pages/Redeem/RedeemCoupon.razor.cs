@@ -16,6 +16,7 @@ namespace RoutesApp.Pages.Redeem
 {
     public partial class RedeemCoupon
     {
+        #pragma warning disable
         [Parameter]
         public string CouponId { get; set; }
 
@@ -27,6 +28,7 @@ namespace RoutesApp.Pages.Redeem
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
+        #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try

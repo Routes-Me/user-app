@@ -17,6 +17,7 @@ namespace RoutesApp.Pages.Auth
 {
     public partial class Registration
     {
+        #pragma warning disable
         Models.DbModels.Registration model = new Models.DbModels.Registration();
         bool isPhone = false;
         bool isEmail = true;
@@ -25,6 +26,7 @@ namespace RoutesApp.Pages.Auth
         string spinner = "d-none";
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
+        #pragma warning restore
 
         public async Task CheckEmailOrPhone()
         {

@@ -15,6 +15,7 @@ namespace RoutesApp.Pages.Promotions
 {
     public partial class PromotionsData
     {
+        #pragma warning disable
         [Parameter]
         public string PromotionId { get; set; }
 
@@ -23,6 +24,7 @@ namespace RoutesApp.Pages.Promotions
         string spinner = "", message = string.Empty, couponLoader = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         string couponId = string.Empty, userId = string.Empty;
+        #pragma warning restore
 
         protected override async Task OnInitializedAsync()
         {

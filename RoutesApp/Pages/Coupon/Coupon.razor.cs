@@ -12,13 +12,14 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class Coupon
     {
+        #pragma warning disable
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         int counter = 0, totalCount = 0;
         string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty, OfficerId = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
-
+        #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try

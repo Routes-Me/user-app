@@ -8,10 +8,14 @@ namespace RoutesApp.Pages.Auth
 {
     public partial class RecoverPassword
     {
+        #pragma warning disable
+
         ForgotPassword model = new ForgotPassword();
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         string spinner = "d-none";
+
+        #pragma warning restore
 
         public async Task RetrivePassword()
         {

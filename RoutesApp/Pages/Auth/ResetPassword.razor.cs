@@ -13,12 +13,14 @@ namespace RoutesApp.Pages.Auth
 {
     public partial class ResetPassword
     {
+        #pragma warning disable
         SetNewPassword model = new SetNewPassword();
         string message = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         string spinner = "d-none";
         [Parameter]
         public string UserId { get; set; }
+        #pragma warning restore
 
         public async Task CreateNewPassword()
         {

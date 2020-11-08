@@ -14,11 +14,16 @@ namespace RoutesApp.Pages.Promotions
 {
     public partial class PromotionDetails
     {
+        #pragma warning disable
+
         string spinner = "", promotionId = string.Empty, token = string.Empty, message = string.Empty;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         List<PromotionDetailsData> model = new List<PromotionDetailsData>();
         AlertMessageType messageType = AlertMessageType.Success;
+
+        #pragma warning restore
+
         protected override async Task OnInitializedAsync()
         {
             try
@@ -49,6 +54,7 @@ namespace RoutesApp.Pages.Promotions
                         promotionDetails.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/promotions/" + item.PromotionId + "");
                         model.Add(promotionDetails);
                     }
+
                 }
                 else
                 {

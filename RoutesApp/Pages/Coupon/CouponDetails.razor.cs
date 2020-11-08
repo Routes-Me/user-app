@@ -13,11 +13,13 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class CouponDetails
     {
+        #pragma warning disable
         string spinner = "", couponId = string.Empty, token = string.Empty, message = string.Empty, OfficerId = string.Empty;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         List<CouponDetailData> model = new List<CouponDetailData>();
         AlertMessageType messageType = AlertMessageType.Success;
+        #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try

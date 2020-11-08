@@ -14,6 +14,7 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class UserProfile
     {
+        #pragma warning disable
         string spinner = string.Empty, UserName = string.Empty, UserPhone = string.Empty, UserEmail = string.Empty, message = string.Empty;
         string modelSpinner = "d-none";
         AlertMessageType messageType = AlertMessageType.Success;
@@ -22,6 +23,7 @@ namespace RoutesApp.Pages.Coupon
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
+        #pragma warning disable
         protected override void OnInitialized()
         {
             try

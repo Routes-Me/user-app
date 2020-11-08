@@ -13,11 +13,13 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class CouponList
     {
+        #pragma warning disable
         string spinner = "", message = string.Empty, userId = string.Empty, token = string.Empty;
         List<QRCodeAll> model = new List<QRCodeAll>();
         AlertMessageType messageType = AlertMessageType.Success;
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
+        #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try
