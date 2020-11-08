@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 WORKDIR /app
 COPY . ./
-RUN ASPNETCORE_ENVIRONMENT=Production dotnet publish -c Release -o output
+RUN ASPNETCORE_ENVIRONMENT=Staging dotnet publish -c Release -o output
 
 FROM nginx:alpine
 WORKDIR /var/www/web
