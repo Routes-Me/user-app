@@ -13,7 +13,7 @@ variables:
   dockerRegistryServiceConnection: 'c2d7d1b7-3dc8-4abb-b0e9-5f601cc454b4'
   imageRepository: 'userapp'
   containerRegistry: 'stagenoruaebscontainerregistry.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/RoutesApp/Dockerfile'
+  dockerfilePath: '$(Build.SourcesDirectory)/RoutesApp/Dockerfile.stage'
   tag: '$(Build.BuildId)'
   
   # Agent VM image name
