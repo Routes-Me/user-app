@@ -15,7 +15,7 @@ namespace RoutesApp.Pages.Coupon
 {
     public partial class Coupon
     {
-        #pragma warning disable
+#pragma warning disable
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         int counter = 0, totalCount = 0;
@@ -25,12 +25,12 @@ namespace RoutesApp.Pages.Coupon
         PromotionCode promotionModel = new PromotionCode();
         string modelSpinner = "d-none";
         bool IsError = false;
+        string displayCoupon = string.Empty, displayEmpty = "d-none";
 #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try
             {
-
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
                 tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
@@ -68,8 +68,8 @@ namespace RoutesApp.Pages.Coupon
                     }
                     else
                     {
-                        message = "No coupons available.";
-                        messageType = AlertMessageType.Error;
+                        displayCoupon = "d-none";
+                        displayEmpty = string.Empty;
                     }
                 }
                 else
