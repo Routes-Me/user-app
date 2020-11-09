@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
+using RoutesApp.Models.DbModels;
+using System.Net.Http;
+using System.Text;
 
 namespace RoutesApp.Pages.Coupon
 {
@@ -19,7 +22,10 @@ namespace RoutesApp.Pages.Coupon
         string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty, OfficerId = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
-        #pragma warning restore
+        PromotionCode promotionModel = new PromotionCode();
+        string modelSpinner = "d-none";
+        bool IsError = false;
+#pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try
@@ -85,6 +91,100 @@ namespace RoutesApp.Pages.Coupon
                 message = "Something went wrong!! Please try again. ";
                 messageType = AlertMessageType.Error;
                 spinner = "d-none";
+            }
+        }
+
+        public async Task SubmitPromotionCode()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(promotionModel.PromotionId))
+                {
+                    modelSpinner = "";
+                    var userState = authenticationState.Result;
+                    string userId = userState.User.FindFirst("UserId").Value;
+                    string Token = userState.User.FindFirst("AccessToken").Value;
+                    Http.DefaultRequestHeaders.Clear();
+                    Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+
+                    var promotionResult = await Http.GetAsync("/api/promotions/" + promotionModel.PromotionId);
+                    var promotionResponseData = await promotionResult.Content.ReadAsStringAsync();
+                    var promotionRresponse = JsonConvert.DeserializeObject<PromotionsGetResponse>(promotionResponseData);
+                    if (promotionRresponse.status == true)
+                    {
+                        if (promotionRresponse.data.Count == 0)
+                        {
+                            message = "Enter valid promotion.";
+                            messageType = AlertMessageType.Error;
+                            IsError = true;
+                        }
+                    }
+                    else
+                    {
+                        if (promotionRresponse.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+                            message = "Enter valid promotion.";
+                            messageType = AlertMessageType.Error;
+                            IsError = true;
+                        }
+                    }
+
+                    if (IsError == false)
+                    {
+                        Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
+                        {
+                            promotionId = promotionModel.PromotionId,
+                            userId = userId
+                        };
+                        Http.DefaultRequestHeaders.Clear();
+                        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                        var serializedValue = JsonConvert.SerializeObject(coupon);
+                        var stringContent = new StringContent(serializedValue, Encoding.UTF8, "application/json");
+                        var result = await Http.PostAsync("/api/coupons", stringContent).ConfigureAwait(false);
+                        var responseData = await result.Content.ReadAsStringAsync();
+                        var response = JsonConvert.DeserializeObject<Response>(responseData);
+                        if (response.status == true)
+                        {
+                            navigationManager.NavigateTo("/promotion-details?id=" + promotionModel.PromotionId + "");
+                        }
+                        else
+                        {
+                            if (response.message.Contains("Authentication failed."))
+                            {
+                                navigationManager.NavigateTo("/");
+                            }
+                            else
+                            {
+                                message = response.message;
+                                messageType = AlertMessageType.Error;
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    message = "Promotions not found.";
+                    messageType = AlertMessageType.Error;
+                }
+                modelSpinner = "d-none";
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Input string was not in a correct format."))
+                {
+                    message = "Enter valid promotion.";
+                }
+                else
+                {
+                    message = "Something went wrong!! Please try again. ";
+                }
+                messageType = AlertMessageType.Error;
+                modelSpinner = "d-none";
             }
         }
     }

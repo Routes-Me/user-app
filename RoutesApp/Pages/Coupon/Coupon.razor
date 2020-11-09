@@ -10,12 +10,32 @@
     body {
         background-color: #fff !important;
     }
+
+    .qr-code-scanner-container .top-bar {
+        padding: 15px 15px 15px 0px !important;
+    }
+
+        .qr-code-scanner-container .top-bar .col-4 {
+            margin: auto;
+            padding: 0;
+        }
+
+    .back-to-promotions {
+        margin: auto;
+    }
 </style>
 
-<div class="custom-container">
+<div class="custom-container coupons-section">
     <div class="top-bar">
-        <h2> Promotions </h2>
-        <div class="profile-name"> <a href="/profile"> @Name </a></div>
+        <div class="col-2 text-center">
+            <a href="/profile"> <img src="images/hamburger-menu-icon.png" /> </a>
+        </div>
+        <div class="col-8 text-left">
+            <h2> Promotions </h2>
+        </div>
+        <div class="col-2 text-center qr-code-scanner">
+            <a href="javascript:void(0);"> <img src="images/qr-code-scanner.png" width="35" /> </a>
+        </div>
     </div>
     <AlertMessage Message="@message" MessageType="@messageType" />
     @if (model.Count > 0)
@@ -48,33 +68,63 @@
                     </a>
                 </div>
             }
-
-            @*<h5 class="text-uppercase mt-5"> Redeemed </h5>
-                <div class=" masonry only-two-item-column">
-                    <div class="single-card">
-                        <a href="/coupon-details">
-                            <div class="text-left">
-                                <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
-                                <h4>30% discount for any meal</h4>
-                            </div>
-                            <div class="bottom text-right "> <img src="images/brand-logo.png" width="25" height="25" alt="" /> </div>
-                        </a>
-                    </div>
-                    <div class="single-card">
-                        <a href="/coupon-details">
-                            <div class="text-left">
-                                <div class="barcode-holder"><img src="images/barcode-sample.png" class="w-100" alt="" /></div>
-                                <h4>30% discount for any meal</h4>
-                            </div>
-                            <div class="bottom text-right "> <img src="images/brand-logo.png" width="25" height="25" alt="" /> </div>
-                        </a>
-                    </div>
-                </div>*@
         </div>
     }
-
-
 </div>
+
+<div class="custom-container action-pages p-0 qr-code-scanner-container d-none">
+    @*<div class="top-bar back-to-profile">
+            <a href="javascript:void(0);" class="canecl-link d-flex align-items-center"><img src="images/back-icon.png" width="14" height="24" alt="" class="mr-2" /> Profile</a>
+            <h6>Scan QR Code </h6>
+        </div>*@
+    <div class="top-bar">
+        <div class="col-4 back-to-promotions">
+            <a href="javascript:void(0);" class="d-flex align-items-center"><img src="images/back-icon.png" width="14" height="24" alt="" class="mr-2" /> Promotions</a>
+        </div>
+        <div class="col-4">
+            <h6> Scan QR Code </h6>
+        </div>
+        <div class="col-4 promotion-user-input">
+            <a href="javascript:void(0);" class="success promotioncode">Have a code?</a>
+        </div>
+    </div>
+
+    <div class="qr-scan-message alert-danger"><h6></h6></div>
+</div>
+
+<div class="modal" id="popupModelForPromotionCode" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Promotions</h5>
+                <button type="button" class="close promotion-model-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @*<AlertMessage Message="@message" MessageType="@messageType" />*@
+            <div class="modal-body promotion-model-body">
+                <div class="form-holder">
+                    <EditForm Model="promotionModel" OnValidSubmit="SubmitPromotionCode">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-filds">
+                            <div class="form-group m-0 ">
+                                <RadzenPassword type="text" @bind-Value="promotionModel.PromotionId" Placeholder="Enter promotion code" class="form-control txt-password" id="promotioncode"></RadzenPassword>
+                            </div>
+                        </div>
+                        <div class="form-group promotion-code-group">
+                            <button type="submit" class="btn btn-blue btn-lg promotion-code-submit disabled">Submit</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        <div class="loader @modelSpinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+    </div>
+</div>
+
 <div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>
 
 

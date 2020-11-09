@@ -245,18 +245,18 @@ function enableSubmit() {
     }
 }
 
-$(document).on('click', '.qr-code-scanner .scanner', function () {
-    $('.user-profile').addClass('d-none');
+$(document).on('click', '.qr-code-scanner', function () {
+    $('.coupons-section').addClass('d-none');
     $('.qr-code-scanner-container').removeClass('d-none');
     $('#reader').removeClass('d-none');
 });
 
-$(document).on('click', '.qr-code-scanner .promotioncode', function () {
+$(document).on('click', '.promotion-user-input .promotioncode', function () {
     $("#popupModelForPromotionCode").modal();
 });
 
-$(document).on('click', '.back-to-profile', function () {
-    $('.user-profile').removeClass('d-none');
+$(document).on('click', '.back-to-promotions a', function () {
+    $('.coupons-section').removeClass('d-none');
     $('#reader').addClass('d-none');
     $('.qr-code-scanner-container').addClass('d-none');
 });
