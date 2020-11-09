@@ -697,3 +697,27 @@ ul {
         padding: 4px 0px;
         font-size: 18px;
     }
+
+.top-bar .col-2, .back-to-mainpage {
+    margin: auto;
+}
+
+.qr-code-scanner-container .top-bar {
+    padding: 15px 15px 15px 0px !important;
+}
+
+    .qr-code-scanner-container .top-bar .col-4 {
+        margin: auto;
+        padding: 0;
+    }
+
+.no-data-found .advertisement-image {
+    text-align: center;
+    padding-top: 170px;
+}
+
+.no-data-found .advertisement-text {
+    padding-top: 10px;
+    text-align: center;
+    font-weight: 400;
+}

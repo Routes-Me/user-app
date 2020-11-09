@@ -246,7 +246,7 @@ function enableSubmit() {
 }
 
 $(document).on('click', '.qr-code-scanner', function () {
-    $('.coupons-section').addClass('d-none');
+    $('.main-container-section').addClass('d-none');
     $('.qr-code-scanner-container').removeClass('d-none');
     $('#reader').removeClass('d-none');
 });
@@ -255,12 +255,11 @@ $(document).on('click', '.promotion-user-input .promotioncode', function () {
     $("#popupModelForPromotionCode").modal();
 });
 
-$(document).on('click', '.back-to-promotions a', function () {
-    $('.coupons-section').removeClass('d-none');
+$(document).on('click', '.back-to-mainpage a', function () {
+    $('.main-container-section').removeClass('d-none');
     $('#reader').addClass('d-none');
     $('.qr-code-scanner-container').addClass('d-none');
 });
-
 
 $(document).on('keyup', '#promotioncode', function (event) {
     enableSubmitForPromotion();

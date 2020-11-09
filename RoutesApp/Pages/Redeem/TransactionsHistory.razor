@@ -12,13 +12,22 @@
     .theme-list li {
         padding-top: 15px !important;
     }
+  
 </style>
 
-<div class="custom-container">
+<div class="custom-container main-container-section">
     <div class="top-bar">
-        <h2> History </h2>
-        <div class="profile-name"> <a href="/profile"> @Name </a></div>
+        <div class="col-2 text-center">
+            <a href="/profile"> <img src="images/hamburger-menu-icon.png" /> </a>
+        </div>
+        <div class="col-8 text-left">
+            <h2> History </h2>
+        </div>
+        <div class="col-2 text-center qr-code-scanner">
+            <a href="javascript:void(0);"> <img src="images/qr-code-scanner.png" width="35" /> </a>
+        </div>
     </div>
+
     <AlertMessage Message="@message" MessageType="@messageType" />
     @if (IsSearch == true)
     {
@@ -32,53 +41,110 @@
         }
     }
 
-    <ul class="theme-list">
-        @foreach (var item in model)
-        {
-            <li>
-                <a href="/details?id=@item.RedemptionId&officer=@item.OfficerId" class="link"></a>
-                <div class="left-side"> <img src="@item.LogoUrl" width="25" height="25" class="border-radius-5" alt="" /> </div>
-                <div class="right-side">
-                    <div class="row">
-                        <div class="col-4">@item.RedemptionId</div>
+    <div class="@displayCoupon">
+        <ul class="theme-list">
+            @foreach (var item in model)
+            {
+                <li>
+                    <a href="/details?id=@item.RedemptionId&officer=@item.OfficerId" class="link"></a>
+                    <div class="left-side"> <img src="@item.LogoUrl" width="25" height="25" class="border-radius-5" alt="" /> </div>
+                    <div class="right-side">
+                        <div class="row">
+                            <div class="col-4">@item.RedemptionId</div>
 
-                        @if (Convert.ToDateTime(item.CreatedAt) <= DateTime.Now && Convert.ToDateTime(item.CreatedAt) >= DateTime.Now.AddDays(-6))
-                        {
-                            if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.Date)
+                            @if (Convert.ToDateTime(item.CreatedAt) <= DateTime.Now && Convert.ToDateTime(item.CreatedAt) >= DateTime.Now.AddDays(-6))
                             {
-                                <div class="col-8 text-right">
-                                    @( "Today at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
-                                </div>
+                                if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.Date)
+                                {
+                                    <div class="col-8 text-right">
+                                        @( "Today at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                    </div>
 
-                            }
-                            else if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.AddDays(-1).Date)
-                            {
-                                <div class="col-8 text-right">
-                                    @( "Yestrday at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
-                                </div>
+                                }
+                                else if (Convert.ToDateTime(item.CreatedAt).Date == DateTime.Now.AddDays(-1).Date)
+                                {
+                                    <div class="col-8 text-right">
+                                        @( "Yestrday at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-8 text-right">
+                                        @(Convert.ToDateTime(item.CreatedAt).ToString("dddd") + " at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                    </div>
+                                }
                             }
                             else
                             {
                                 <div class="col-8 text-right">
-                                    @(Convert.ToDateTime(item.CreatedAt).ToString("dddd") + " at " + Convert.ToDateTime(item.CreatedAt).ToString("hh:mm tt"))
+                                    @((Convert.ToDateTime(item.CreatedAt).Date).ToString("dd/MM/yyyy"))
                                 </div>
+
                             }
-                        }
-                        else
-                        {
-                            <div class="col-8 text-right">
-                                @((Convert.ToDateTime(item.CreatedAt).Date).ToString("dd/MM/yyyy"))
+
+                            <div class="col-12">
+                                <p class="short-info">@item.Title</p>
                             </div>
-
-                        }
-
-                        <div class="col-12">
-                            <p class="short-info">@item.Title</p>
                         </div>
                     </div>
-                </div>
-            </li>
-        }
-    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="no-data-found @displayEmpty">
+        <div class="advertisement-image"><img src="images/advertisment.png" /></div>
+        <div class="advertisement-text">You have no promotions yet, scan from Routes screen inside a taxi or write the promotion code </div>
+    </div>
 </div>
+
+<div class="custom-container action-pages p-0 qr-code-scanner-container d-none">
+    <div class="top-bar">
+        <div class="col-4 back-to-mainpage">
+            <a href="javascript:void(0);" class="d-flex align-items-center"><img src="images/back-icon.png" width="14" height="24" alt="" class="mr-2" /> History</a>
+        </div>
+        <div class="col-4">
+            <h6> Scan QR Code </h6>
+        </div>
+        <div class="col-4 text-left promotion-user-input">
+            <a href="javascript:void(0);" class="success promotioncode">Have a code?</a>
+        </div>
+    </div>
+
+    <div class="qr-scan-message alert-danger"><h6></h6></div>
+</div>
+
+<div class="modal" id="popupModelForPromotionCode" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Promotions</h5>
+                <button type="button" class="close promotion-model-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <AlertMessage Message="@message" MessageType="@messageType" />
+            <div class="modal-body promotion-model-body">
+                <div class="form-holder">
+                    <EditForm Model="promotionModel" OnValidSubmit="SubmitPromotionCode">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-filds">
+                            <div class="form-group m-0 ">
+                                <RadzenPassword type="text" @bind-Value="promotionModel.PromotionId" Placeholder="Enter promotion code" class="form-control txt-password" id="promotioncode"></RadzenPassword>
+                            </div>
+                        </div>
+                        <div class="form-group promotion-code-group">
+                            <button type="submit" class="btn btn-blue btn-lg promotion-code-submit disabled">Submit</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        <div class="loader @modelSpinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+    </div>
+</div>
+
 <div class="loader @spinner"> <i class="fas fa-spinner fa-spin"></i> </div>
