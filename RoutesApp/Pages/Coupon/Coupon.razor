@@ -2,9 +2,9 @@
 @layout MainLayout
 @inject HttpClient Http
 @inject NavigationManager navigationManager
-@inject ILocalStorageService storageService
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
+@inject ILocalStorageService localStore
 
 <style>
     body {

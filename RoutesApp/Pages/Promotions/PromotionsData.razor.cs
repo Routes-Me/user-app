@@ -94,7 +94,7 @@ namespace RoutesApp.Pages.Promotions
         public async Task RedirectToCoupon()
         {
             await JSRuntime.InvokeVoidAsync("removeModelBackdrop");
-            navigationManager.NavigateTo("/coupons");
+            navigationManager.NavigateTo("/coupons?new=false");
         }
     }
 }

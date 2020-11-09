@@ -10,6 +10,7 @@ using Microsoft.JSInterop;
 using RoutesApp.Models.DbModels;
 using System.Net.Http;
 using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace RoutesApp.Pages.Coupon
 {
@@ -24,13 +25,19 @@ namespace RoutesApp.Pages.Coupon
         AlertMessageType messageType = AlertMessageType.Success;
         PromotionCode promotionModel = new PromotionCode();
         string modelSpinner = "d-none";
-        bool IsError = false;
-        string displayCoupon = string.Empty, displayEmpty = "d-none";
+        bool isError = false;
+        string displayCoupon = string.Empty, displayEmpty = "d-none", localStorageKey = "Coupons", isNewCoupon = string.Empty;
 #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
             try
             {
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("new", out var _isNew))
+                {
+                    isNewCoupon = _isNew;
+                }
+
                 var userState = authenticationState.Result;
                 userId = userState.User.FindFirst("UserId").Value;
                 tokenInstitutionId = userState.User.FindFirst("InstitutionId").Value;
@@ -47,43 +54,57 @@ namespace RoutesApp.Pages.Coupon
                 {
                     Name = UserName.Substring(0, 2);
                 }
-                var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
-                var responseData = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
-                if (response.status == true)
+                if (string.IsNullOrEmpty(isNewCoupon) || isNewCoupon.ToLower() == "true")
                 {
-                    totalCount = response.data.Count();
-                    if (totalCount > 0)
+                    await localStore.RemoveItemAsync(localStorageKey);
+                }
+                var couponLocalStorage = await localStore.GetItemAsync<List<CouponListData>>(localStorageKey);
+                if (couponLocalStorage == null)
+                {
+                    var result = await Http.GetAsync("/api/coupons?userId=" + userId + "&include=promotion");
+                    var responseData = await result.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<CouponResponse>(responseData);
+                    if (response.status == true)
                     {
-                        message = string.Empty;
-                        foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
+                        totalCount = response.data.Count();
+                        if (totalCount > 0)
                         {
-                            CouponListData couponList = new CouponListData();
-                            couponList.Id = item.couponId;
-                            couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                            couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "");
-                            couponList.Count = totalCount;
-                            model.Add(couponList);
+                            message = string.Empty;
+                            foreach (var item in response.data.OrderByDescending(s => s.createdAt).Take(4))
+                            {
+                                CouponListData couponList = new CouponListData();
+                                couponList.Id = item.couponId;
+                                couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
+                                couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "");
+                                couponList.Count = totalCount;
+                                model.Add(couponList);
+                            }
+                            await localStore.SetItemAsync(localStorageKey, model);
+                        }
+                        else
+                        {
+                            displayCoupon = "d-none";
+                            displayEmpty = string.Empty;
                         }
                     }
                     else
                     {
-                        displayCoupon = "d-none";
-                        displayEmpty = string.Empty;
+                        if (response.message.Contains("Authentication failed."))
+                        {
+                            navigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+                            message = response.message;
+                            messageType = AlertMessageType.Error;
+                        }
                     }
                 }
                 else
                 {
-                    if (response.message.Contains("Authentication failed."))
-                    {
-                        navigationManager.NavigateTo("/");
-                    }
-                    else
-                    {
-                        message = response.message;
-                        messageType = AlertMessageType.Error;
-                    }
+                    model = couponLocalStorage;
                 }
+
                 spinner = "d-none";
             }
             catch (Exception)
@@ -116,7 +137,7 @@ namespace RoutesApp.Pages.Coupon
                         {
                             message = "Enter valid promotion.";
                             messageType = AlertMessageType.Error;
-                            IsError = true;
+                            isError = true;
                         }
                     }
                     else
@@ -129,11 +150,11 @@ namespace RoutesApp.Pages.Coupon
                         {
                             message = "Enter valid promotion.";
                             messageType = AlertMessageType.Error;
-                            IsError = true;
+                            isError = true;
                         }
                     }
 
-                    if (IsError == false)
+                    if (isError == false)
                     {
                         Models.DbModels.Coupon coupon = new Models.DbModels.Coupon()
                         {
