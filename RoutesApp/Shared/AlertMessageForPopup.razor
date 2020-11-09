@@ -1,0 +1,39 @@
+﻿@if (!string.IsNullOrWhiteSpace(PopupMessage))
+{
+    <div class="alert @alertClass">@PopupMessage <span @onclick="HideMessage"><span style="float:right;">x</span></span></div>}
+
+@code { [Parameter]
+    public string PopupMessage { get; set; }
+
+    private AlertMessageTypePopup popupMessageType;
+
+    [Parameter]
+    public AlertMessageTypePopup PopupMessageType
+    {
+        get => popupMessageType;
+        set
+        {
+            popupMessageType = value;
+            switch (popupMessageType)
+            {
+                case AlertMessageTypePopup.Error:
+                    alertClass = "alert-danger";
+                    break;
+                case AlertMessageTypePopup.Warning:
+                    alertClass = "alert-warning";
+                    break;
+                case AlertMessageTypePopup.Success:
+                    alertClass = "alert-success";
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    string alertClass = "alert-info";
+
+    void HideMessage()
+    {
+        PopupMessage = string.Empty;
+    } }

@@ -11,14 +11,16 @@ using Microsoft.AspNetCore.Components.Web;
 using RoutesApp.Models.DbModels;
 using System.Net.Http;
 using System.Text;
+using RoutesApp.Shared;
 
 namespace RoutesApp.Pages.Redeem
 {
     public partial class TransactionsHistory
     {
         #pragma warning disable
-        string spinner = string.Empty, message = string.Empty, officerId = string.Empty, token = string.Empty, Name = string.Empty;
+        string spinner = string.Empty, message = string.Empty, officerId = string.Empty, token = string.Empty, Name = string.Empty, popupMessage = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
+        AlertMessageTypePopup popupMessageType = AlertMessageTypePopup.Success;
         List<RedeemHistory> model = new List<RedeemHistory>();
         public string SearchTerm { get; set; }
         [Parameter]
@@ -223,8 +225,8 @@ namespace RoutesApp.Pages.Redeem
                     {
                         if (promotionRresponse.data.Count == 0)
                         {
-                            message = "Enter valid promotion.";
-                            messageType = AlertMessageType.Error;
+                            popupMessage = "Enter valid promotion.";
+                            popupMessageType = AlertMessageTypePopup.Error;
                             isError = true;
                         }
                     }
@@ -236,8 +238,8 @@ namespace RoutesApp.Pages.Redeem
                         }
                         else
                         {
-                            message = "Enter valid promotion.";
-                            messageType = AlertMessageType.Error;
+                            popupMessage = "Enter valid promotion.";
+                            popupMessageType = AlertMessageTypePopup.Error;
                             isError = true;
                         }
                     }
@@ -268,8 +270,8 @@ namespace RoutesApp.Pages.Redeem
                             }
                             else
                             {
-                                message = response.message;
-                                messageType = AlertMessageType.Error;
+                                popupMessage = response.message;
+                                popupMessageType = AlertMessageTypePopup.Error;
                             }
                         }
 
@@ -277,8 +279,8 @@ namespace RoutesApp.Pages.Redeem
                 }
                 else
                 {
-                    message = "Promotions not found.";
-                    messageType = AlertMessageType.Error;
+                    popupMessage = "Promotions not found.";
+                    popupMessageType = AlertMessageTypePopup.Error;
                 }
                 modelSpinner = "d-none";
             }
@@ -286,13 +288,13 @@ namespace RoutesApp.Pages.Redeem
             {
                 if (ex.Message.Contains("Input string was not in a correct format."))
                 {
-                    message = "Enter valid promotion.";
+                    popupMessage = "Enter valid promotion.";
                 }
                 else
                 {
-                    message = "Something went wrong!! Please try again. ";
+                    popupMessage = "Something went wrong!! Please try again. ";
                 }
-                messageType = AlertMessageType.Error;
+                popupMessageType = AlertMessageTypePopup.Error;
                 modelSpinner = "d-none";
             }
         }

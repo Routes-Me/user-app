@@ -9,4 +9,9 @@ namespace RoutesApp.Models
     {
         Error, Warning, Success
     }
+
+    public enum AlertMessageTypePopup
+    {
+        Error, Warning, Success
+    }
 }

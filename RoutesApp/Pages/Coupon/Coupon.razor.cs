@@ -20,9 +20,10 @@ namespace RoutesApp.Pages.Coupon
         [CascadingParameter]
         private Task<AuthenticationState> authenticationState { get; set; }
         int counter = 0, totalCount = 0;
-        string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty, OfficerId = string.Empty;
+        string spinner = "", message = string.Empty, Name = string.Empty, userId = string.Empty, tokenInstitutionId = string.Empty, OfficerId = string.Empty, popupMessage = string.Empty;
         List<CouponListData> model = new List<CouponListData>();
         AlertMessageType messageType = AlertMessageType.Success;
+        AlertMessageTypePopup popupMessageType = AlertMessageTypePopup.Success;
         PromotionCode promotionModel = new PromotionCode();
         string modelSpinner = "d-none";
         bool isError = false;
@@ -135,8 +136,8 @@ namespace RoutesApp.Pages.Coupon
                     {
                         if (promotionRresponse.data.Count == 0)
                         {
-                            message = "Enter valid promotion.";
-                            messageType = AlertMessageType.Error;
+                            popupMessage = "Enter valid promotion.";
+                            popupMessageType = AlertMessageTypePopup.Error;
                             isError = true;
                         }
                     }
@@ -148,8 +149,8 @@ namespace RoutesApp.Pages.Coupon
                         }
                         else
                         {
-                            message = "Enter valid promotion.";
-                            messageType = AlertMessageType.Error;
+                            popupMessage = "Enter valid promotion.";
+                            popupMessageType = AlertMessageTypePopup.Error;
                             isError = true;
                         }
                     }
@@ -180,8 +181,8 @@ namespace RoutesApp.Pages.Coupon
                             }
                             else
                             {
-                                message = response.message;
-                                messageType = AlertMessageType.Error;
+                                popupMessage = response.message;
+                                popupMessageType = AlertMessageTypePopup.Error;
                             }
                         }
 
@@ -189,8 +190,8 @@ namespace RoutesApp.Pages.Coupon
                 }
                 else
                 {
-                    message = "Promotions not found.";
-                    messageType = AlertMessageType.Error;
+                    popupMessage = "Promotions not found.";
+                    popupMessageType = AlertMessageTypePopup.Error;
                 }
                 modelSpinner = "d-none";
             }
@@ -198,13 +199,13 @@ namespace RoutesApp.Pages.Coupon
             {
                 if (ex.Message.Contains("Input string was not in a correct format."))
                 {
-                    message = "Enter valid promotion.";
+                    popupMessage = "Enter valid promotion.";
                 }
                 else
                 {
-                    message = "Something went wrong!! Please try again. ";
+                    popupMessage = "Something went wrong!! Please try again. ";
                 }
-                messageType = AlertMessageType.Error;
+                popupMessageType = AlertMessageTypePopup.Error;
                 modelSpinner = "d-none";
             }
         }
