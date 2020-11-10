@@ -27,7 +27,7 @@ namespace RoutesApp.Pages.Coupon
         PromotionCode promotionModel = new PromotionCode();
         string modelSpinner = "d-none";
         bool isError = false;
-        string displayCoupon = string.Empty, displayEmpty = "d-none", localStorageKey = "Coupons", localStorageKeyCount = "CouponsCount", isNewCoupon = string.Empty;
+        string displayCoupon = string.Empty, displayEmpty = "d-none", localStorageKey = "Coupons", localStorageKeyCount = "CouponsCount", localStorageUserId = "CouponsUserId", isNewCoupon = string.Empty;
 #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
@@ -55,10 +55,12 @@ namespace RoutesApp.Pages.Coupon
                 {
                     Name = UserName.Substring(0, 2);
                 }
-                if (string.IsNullOrEmpty(isNewCoupon) || isNewCoupon.ToLower() == "true")
+                string localStorageUser = await localStore.GetItemAsync<string>(localStorageUserId);
+                if (localStorageUser != userId || string.IsNullOrEmpty(isNewCoupon) || isNewCoupon.ToLower() == "true")
                 {
                     await localStore.RemoveItemAsync(localStorageKey);
                     await localStore.RemoveItemAsync(localStorageKeyCount);
+                    await localStore.RemoveItemAsync(localStorageUserId);
                 }
                 var couponLocalStorage = await localStore.GetItemAsync<List<CouponListData>>(localStorageKey);
                 if (couponLocalStorage == null)
@@ -83,6 +85,7 @@ namespace RoutesApp.Pages.Coupon
                             }
                             await localStore.SetItemAsync(localStorageKey, model);
                             await localStore.SetItemAsync(localStorageKeyCount, totalCount);
+                            await localStore.SetItemAsync(localStorageUserId, userId);
                         }
                         else
                         {
