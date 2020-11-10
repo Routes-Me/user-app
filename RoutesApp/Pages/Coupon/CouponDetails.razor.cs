@@ -43,7 +43,7 @@ namespace RoutesApp.Pages.Coupon
                         CouponDetailData qrModel = new CouponDetailData();
                         qrModel.Id = item.couponId;
                         qrModel.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/redeem/" + item.couponId + "");
+                        qrModel.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://stage.app.routesme.com/redeem/" + item.couponId + "");
                         model.Add(qrModel);
                     }
                 }

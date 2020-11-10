@@ -51,7 +51,7 @@ namespace RoutesApp.Pages.Promotions
                         promotion.UsageLimit = item.UsageLimit;
                         promotion.IsSharable = item.IsSharable;
                         promotionDetails.promotion = promotion;
-                        promotionDetails.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://vmtprojectstage.uaenorth.cloudapp.azure.com:5050/promotions/" + item.PromotionId + "");
+                        promotionDetails.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://stage.app.routesme.com/promotions/" + item.PromotionId + "");
                         model.Add(promotionDetails);
                     }
 
