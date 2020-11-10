@@ -10,7 +10,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '2f35f205-e703-43bd-8621-d22e8cf0fd8c'
+  dockerRegistryServiceConnection: '0a9976d6-2f84-4988-95c3-673f2ab3b519'
   imageRepository: 'userapp'
   containerRegistry: 'noruaebscontainerregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/RoutesApp/Dockerfile'
