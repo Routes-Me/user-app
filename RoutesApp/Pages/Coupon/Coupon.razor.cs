@@ -27,7 +27,7 @@ namespace RoutesApp.Pages.Coupon
         PromotionCode promotionModel = new PromotionCode();
         string modelSpinner = "d-none";
         bool isError = false;
-        string displayCoupon = string.Empty, displayEmpty = "d-none", localStorageKey = "Coupons", isNewCoupon = string.Empty;
+        string displayCoupon = string.Empty, displayEmpty = "d-none", localStorageKey = "Coupons", localStorageKeyCount = "CouponsCount", isNewCoupon = string.Empty;
 #pragma warning restore
         protected override async Task OnInitializedAsync()
         {
@@ -58,6 +58,7 @@ namespace RoutesApp.Pages.Coupon
                 if (string.IsNullOrEmpty(isNewCoupon) || isNewCoupon.ToLower() == "true")
                 {
                     await localStore.RemoveItemAsync(localStorageKey);
+                    await localStore.RemoveItemAsync(localStorageKeyCount);
                 }
                 var couponLocalStorage = await localStore.GetItemAsync<List<CouponListData>>(localStorageKey);
                 if (couponLocalStorage == null)
@@ -81,6 +82,7 @@ namespace RoutesApp.Pages.Coupon
                                 model.Add(couponList);
                             }
                             await localStore.SetItemAsync(localStorageKey, model);
+                            await localStore.SetItemAsync(localStorageKeyCount, totalCount);
                         }
                         else
                         {
@@ -104,6 +106,7 @@ namespace RoutesApp.Pages.Coupon
                 else
                 {
                     model = couponLocalStorage;
+                    totalCount = await localStore.GetItemAsync<int>(localStorageKeyCount);
                 }
 
                 spinner = "d-none";
