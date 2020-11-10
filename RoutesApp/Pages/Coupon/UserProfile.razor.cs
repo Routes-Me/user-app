@@ -46,9 +46,10 @@ namespace RoutesApp.Pages.Coupon
         {
             var localStateProvider = (LocalAuthenticationStateProvider)authenticationStateProvider;
             await localStateProvider.LogoutAsync();
+            await localStore.RemoveItemAsync("Coupons");
+            await localStore.RemoveItemAsync("CouponsCount");
+            await localStore.RemoveItemAsync("CouponsUserId");
             navigationManager.NavigateTo("/");
         }
-
-       
     }
 }
