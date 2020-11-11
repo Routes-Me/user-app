@@ -86,6 +86,8 @@ namespace RoutesApp.Pages.Coupon
                             await localStore.SetItemAsync(localStorageKey, model);
                             await localStore.SetItemAsync(localStorageKeyCount, totalCount);
                             await localStore.SetItemAsync(localStorageUserId, userId);
+                            displayCoupon = string.Empty;
+                            displayEmpty = "d-none";
                         }
                         else
                         {

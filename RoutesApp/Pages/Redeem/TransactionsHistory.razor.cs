@@ -17,7 +17,7 @@ namespace RoutesApp.Pages.Redeem
 {
     public partial class TransactionsHistory
     {
-        #pragma warning disable
+#pragma warning disable
         string spinner = string.Empty, message = string.Empty, officerId = string.Empty, token = string.Empty, Name = string.Empty, popupMessage = string.Empty;
         AlertMessageType messageType = AlertMessageType.Success;
         AlertMessageTypePopup popupMessageType = AlertMessageTypePopup.Success;
@@ -178,6 +178,8 @@ namespace RoutesApp.Pages.Redeem
                             redeemModel.LogoUrl = response.included.coupons.Where(x => x.couponId == item.CouponId).Select(x => x.Promotion.LogoUrl).FirstOrDefault();
                             model.Add(redeemModel);
                         }
+                        displayCoupon = string.Empty;
+                        displayEmpty = "d-none";
                     }
                     else
                     {
