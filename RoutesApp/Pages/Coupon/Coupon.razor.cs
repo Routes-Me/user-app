@@ -79,7 +79,7 @@ namespace RoutesApp.Pages.Coupon
                                 CouponListData couponList = new CouponListData();
                                 couponList.Id = item.couponId;
                                 couponList.Promotion = response.included.promotions.Where(x => x.PromotionId == item.promotionId).FirstOrDefault();
-                                couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://stage.app.routesme.com/redeem/" + item.couponId + "");
+                                couponList.QrCodeImage = await JSRuntime.InvokeAsync<string>("GenerateQRCode", "http://app.routesme.com/redeem/" + item.couponId + "");
                                 couponList.Count = totalCount;
                                 model.Add(couponList);
                             }

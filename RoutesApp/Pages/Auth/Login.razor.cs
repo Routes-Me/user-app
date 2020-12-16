@@ -121,7 +121,7 @@ namespace RoutesApp.Pages.Auth
                 string EncryptedPassword = string.Empty;
                 if (isEmail)
                 {
-                    if (encryption.IndexOfBSign(model.Password) != -1)
+                    if (encryption.IsDashboard(model.Password))
                     {
                         EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
                     }
@@ -267,9 +267,9 @@ namespace RoutesApp.Pages.Auth
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                message = "Something went wrong!! Please try again. ";
+                message = "Something went wrong!! Please try again. " + ex.Message;
                 messageType = AlertMessageType.Error;
             }
             spinner = "d-none";

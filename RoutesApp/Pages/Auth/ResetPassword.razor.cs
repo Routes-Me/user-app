@@ -35,7 +35,7 @@ namespace RoutesApp.Pages.Auth
                 string KeyForDashboard = "Wf6cXM10cj_7B)V,";
                 string EncryptedPassword = string.Empty;
 
-                if (encryption.IndexOfBSign(model.Password) != -1)
+                if (encryption.IsDashboard(model.Password))
                 {
                     EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
                 }
