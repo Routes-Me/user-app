@@ -109,7 +109,7 @@ namespace RoutesApp.Pages.Auth
                 if (isEmail)
                 {
                     EmailAddress = model.UserName;
-                    if (encryption.IndexOfBSign(model.Password) != -1)
+                    if (encryption.IsDashboard(model.Password))
                     {
                         EncryptedPassword = await encryption.EncryptAndEncode(model.Password, IVForDashboard, KeyForDashboard);
                     }
